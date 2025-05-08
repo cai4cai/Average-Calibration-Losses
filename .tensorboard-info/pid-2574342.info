@@ -1,0 +1,10 @@
+{
+    "cache_key": "eyJhcmd1bWVudHMiOlsiLS1sb2dkaXIiLCJidW5kbGVzLyIsIi0tcG9ydCIsIjYwMTMiXSwiY29uZmlndXJlX2t3YXJncyI6e30sIndvcmtpbmdfZGlyZWN0b3J5IjoiL25mcy9ob21lL3RiYXJmb290L1NBQ1JPUyJ9",
+    "db": "",
+    "logdir": "bundles/",
+    "path_prefix": "",
+    "pid": 2574342,
+    "port": 6013,
+    "start_time": 1718719427,
+    "version": "2.11.2"
+}

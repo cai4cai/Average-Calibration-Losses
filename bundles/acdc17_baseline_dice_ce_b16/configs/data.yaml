@@ -1,0 +1,139 @@
+# ACDC Dataset Configuration for Cardiac MRI Segmentation
+# Database access:
+# The ACDC dataset was created from clinical exams acquired at the University Hospital of Dijon, France.
+# The dataset consists of 150 exams from different patients divided into 5 evenly distributed subgroups (4 pathological + 1 healthy).
+# Each patient includes additional clinical information: weight, height, diastolic and systolic phase instants.
+# The acquisitions were obtained using 1.5 T and 3.0 T MRI scanners with SSFP sequences in short axis orientation.
+# The training dataset contains 100 patients, and the testing dataset includes 50 patients.
+
+# Target: Cardiac MRI segmentation (Task 1 MRI only)
+# Modality: MRI
+# Size: 150 MRI cases (100 Training, 50 Testing)
+# Source: University Hospital of Dijon, France
+# Challenge: Segmentation of cardiac structures from diverse clinical scenarios
+
+num_channels: 1
+num_classes: 4  # Left Ventricle, Myocardium, Right Ventricle + background
+batch_size: 8
+batch_size: 16
+
+patch_size: [256, 256, 16]  # Adjusted for MRI data, divisible by 16
+val_windows_size: [256, 256, 16]
+resample_resolution: [1.0, 1.0, 5.0]
+
+class_names: ['background', 'right_ventricle', 'myocardium', 'left_ventricle']
+
+learning_rate: 0.0002
+
+##########################
+# DATASET SETUP
+##########################
+dataset_dir: '../data/acdc/ACDC/database'
+
+# Setup training cases and labels
+train_cases: "$sorted([os.path.join(@dataset_dir, 'training', patient, frame) for patient in os.listdir(os.path.join(@dataset_dir, 'training')) if os.path.isdir(os.path.join(@dataset_dir, 'training', patient)) for frame in os.listdir(os.path.join(@dataset_dir, 'training', patient)) if frame.endswith('.nii.gz') and 'frame' in frame and '_gt' not in frame])"
+
+train_labels: "$[os.path.join(os.path.dirname(case), os.path.basename(case).replace('.nii.gz', '_gt.nii.gz')) for case in @train_cases]"
+
+data_dicts: "$[{'image': img, 'label': lbl} for img, lbl in zip(@train_cases, @train_labels)]"
+
+partitions: "$monai.data.partition_dataset(@data_dicts, (9, 1), shuffle=True, seed=@seed)"
+train_sub: "$@partitions[0]"
+val_sub: "$@partitions[1]"
+
+# Setup testing cases and labels
+test_cases: "$sorted([os.path.join(@dataset_dir, 'testing', patient, frame) for patient in os.listdir(os.path.join(@dataset_dir, 'testing')) if os.path.isdir(os.path.join(@dataset_dir, 'testing', patient)) for frame in os.listdir(os.path.join(@dataset_dir, 'testing', patient)) if frame.endswith('.nii.gz') and 'frame' in frame and '_gt' not in frame])"
+
+test_labels: "$[os.path.join(os.path.dirname(case), os.path.basename(case).replace('.nii.gz', '_gt.nii.gz')) for case in @test_cases]"
+
+test_sub: "$[{'image': img, 'label': lbl} for img, lbl in zip(@test_cases, @test_labels)]"
+
+##########################
+# PRE-PROCESSING TRANSFORMATIONS
+##########################
+
+load_transforms:
+  - _target_: LoadImaged
+    keys: ['image', 'label']
+  - _target_: EnsureChannelFirstd
+    keys: ['image', 'label']
+  - _target_: EnsureTyped
+    keys: ['image', 'label']
+  - _target_: EnsureSameShaped
+    keys: ['label']
+    source_key: 'image'
+    allow_missing_keys: true
+    warn: '@debug'
+
+resample_transforms:
+  - _target_: CropForegroundd
+    keys: ['image', 'label']
+    source_key: 'image'
+  - _target_: Orientationd
+    keys: ['image', 'label']
+    axcodes: 'RAS'
+  - _target_: Spacingd
+    keys: ['image', 'label']
+    pixdim: '@resample_resolution'
+    mode: ['bilinear', 'nearest']
+
+normalize_transforms:
+  - _target_: NormalizeIntensityd
+    keys: ['image']
+    nonzero: true
+    channel_wise: true
+
+augmentation_transforms:
+  - _target_: RandAffined
+    keys: ['image', 'label']
+    prob: 0.5
+    rotate_range: [0.1, 0.1, 0.1]
+    shear_range: [0.1, 0.1, 0.1]
+    translate_range: [0.1, 0.1, 0.1]
+    scale_range: [0.1, 0.1, 0.1]
+    mode: ['bilinear', 'nearest']
+    padding_mode: ['constant', 'border']
+
+crop_transforms:
+  - _target_: FgBgToIndicesd
+    keys: 'label'
+    fg_postfix: '_fg'
+    bg_postfix: '_bg'
+    image_key: 'image'
+  - _target_: SpatialPadd
+    keys: ['image', 'label']
+    spatial_size: '@patch_size'
+    mode: ["reflect", "constant"]
+  - _target_: RandCropByPosNegLabeld
+    keys: ['image', 'label']
+    label_key: 'label'
+    spatial_size: '@patch_size'
+    pos: 1
+    neg: 1
+    num_samples: 1
+    fg_indices_key: 'label_fg'
+    bg_indices_key: 'label_bg'
+    image_key: 'image'
+    image_threshold: 0
+
+
+train_transforms:
+  - _target_: Compose
+    transforms: $@load_transforms + @resample_transforms + @normalize_transforms + @augmentation_transforms + @crop_transforms
+
+val_transforms:
+  _target_: Compose
+  transforms: $@load_transforms + @resample_transforms + @normalize_transforms
+
+##########################
+# POST-PROCESSING AND INFERENCE
+##########################
+val_postprocessing:
+  _target_: Compose
+  transforms:
+  - _target_: Activationsd
+    keys: '@pred'
+    softmax: true
+  - _target_: AsDiscreted
+    keys: '@label'
+    to_onehot: '@num_classes'

@@ -1,0 +1,88 @@
+jobs:
+  - job_name: "acdc17-baseline-1"
+    bundle: "acdc17_baseline_dice_ce_1"
+    mode: "inference_eval"
+    seed: 12345
+    gpu_memory: "6G"
+    cpu_memory: "32G"
+
+  - job_name: "acdc17-hardl1ace-1"
+    bundle: "acdc17_hardl1ace_dice_ce_1"
+    mode: "inference_eval"
+    seed: 12345
+    gpu_memory: "6G"
+    cpu_memory: "32G"
+
+  - job_name: "acdc17-softl1ace-1"
+    bundle: "acdc17_softl1ace_dice_ce_1"
+    mode: "inference_eval"
+    seed: 12345
+    gpu_memory: "6G"
+    cpu_memory: "32G"
+
+
+  # - job_name: "acdc17-baseline-b4"    # batch size 4
+  #   bundle: "acdc17_baseline_dice_ce_b4"
+  #   mode: "inference_eval"
+  #   seed: 12345
+  #   gpu_memory: "8G"
+  #   cpu_memory: "32G"
+
+  # - job_name: "acdc17-hardl1ace-b4"
+  #   bundle: "acdc17_hardl1ace_dice_ce_b4"
+  #   mode: "inference_eval"
+  #   seed: 12345
+  #   gpu_memory: "8G"
+  #   cpu_memory: "32G"
+
+  # - job_name: "acdc17-softl1ace-b4"
+  #   bundle: "acdc17_softl1ace_dice_ce_b4"
+  #   mode: "inference_eval"
+  #   seed: 12345
+  #   gpu_memory: "8G"
+  #   cpu_memory: "32G"
+
+
+  # - job_name: "acdc17-baseline-b8"
+  #   bundle: "acdc17_baseline_dice_ce_b8"
+  #   mode: "inference_eval"
+  #   seed: 12345
+  #   gpu_memory: "14G"
+  #   cpu_memory: "32G"
+
+  # - job_name: "acdc17-hardl1ace-b8"
+  #   bundle: "acdc17_hardl1ace_dice_ce_b8"
+  #   mode: "inference_eval"
+  #   seed: 12345
+  #   gpu_memory: "14G"
+  #   cpu_memory: "32G"
+
+  # - job_name: "acdc17-softl1ace-b8"
+  #   bundle: "acdc17_softl1ace_dice_ce_b8"
+  #   mode: "inference_eval"
+  #   seed: 12345
+  #   gpu_memory: "16G"
+  #   cpu_memory: "32G"
+
+
+  # - job_name: "acdc17-baseline-b16"
+  #   bundle: "acdc17_baseline_dice_ce_b16"
+  #   mode: "inference_eval"
+  #   seed: 12345
+  #   gpu_memory: "24G"
+  #   cpu_memory: "32G"
+
+
+  # - job_name: "acdc17-hardl1ace-b16"
+  #   bundle: "acdc17_hardl1ace_dice_ce_b16"
+  #   mode: "inference_eval"
+  #   seed: 12345
+  #   gpu_memory: "24G"
+  #   cpu_memory: "32G"
+
+  # - job_name: "acdc17-softl1ace-b16"
+  #   bundle: "acdc17_softl1ace_dice_ce_b16"
+  #   mode: "inference_eval"
+  #   seed: 12345
+  #   gpu_memory: "28G"
+  #   cpu_memory: "32G"

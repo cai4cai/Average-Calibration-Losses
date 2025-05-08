@@ -1,0 +1,4 @@
+2024-12-04 14:43:00,946 ignite.engine.engine.SupervisedEvaluator INFO: Restored all variables from bundles/amos22_hardl1ace_dice_ce_nl/seed_12345/model_final_iteration=20.pt
+2024-12-04 14:52:43,624 ignite.engine.engine.SupervisedEvaluator INFO: Restored all variables from bundles/amos22_hardl1ace_dice_ce_nl/seed_12345/model_final_iteration=20.pt
+2024-12-04 15:16:56,957 ignite.engine.engine.SupervisedEvaluator INFO: Got new best metric of mean_dice: 0.8823726177215576
+2024-12-04 15:16:57,069 ignite.engine.engine.SupervisedEvaluator INFO: Epoch[1] Complete. Time taken: 00:24:13.347

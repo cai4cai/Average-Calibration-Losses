@@ -1,0 +1,28 @@
+jobs:
+  - job_name: "amos22-baseline-1"
+    bundle: "amos22_baseline_dice_ce_1"
+    mode: "inference_eval"
+    seed: 12345
+    gpu_memory: "32600M"
+    cpu_memory: "32G"
+
+  - job_name: "amos22-hardl1ace-1"
+    bundle: "amos22_hardl1ace_dice_ce_1"
+    mode: "inference_eval"
+    seed: 12345
+    gpu_memory: "32600M"
+    cpu_memory: "32G"
+
+  - job_name: "amos22-softl1ace-1"
+    bundle: "amos22_softl1ace_dice_ce_1"
+    mode: "inference_eval"
+    seed: 12345
+    gpu_memory: "38G"
+    cpu_memory: "48G"
+
+  - job_name: "amos22-softl1ace-nl"
+    bundle: "amos22_softl1ace_dice_ce_nl"
+    mode: "inference_eval"
+    seed: 12345
+    gpu_memory: "38G"
+    cpu_memory: "48G"

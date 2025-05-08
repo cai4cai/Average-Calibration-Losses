@@ -1,0 +1,4 @@
+2025-01-24 16:19:16,279 ignite.engine.engine.SupervisedEvaluator INFO: Restored all variables from bundles/kits23_softl1ace_dice_ce_8/seed_12345/model_final_iteration=39.pt
+2025-01-24 18:37:51,257 ignite.engine.engine.SupervisedEvaluator INFO: Restored all variables from bundles/kits23_softl1ace_dice_ce_8/seed_12345/model_final_iteration=39.pt
+2025-01-24 19:40:07,431 ignite.engine.engine.SupervisedEvaluator INFO: Got new best metric of mean_dice: 0.8387448191642761
+2025-01-24 19:40:07,683 ignite.engine.engine.SupervisedEvaluator INFO: Epoch[1] Complete. Time taken: 01:02:16.310

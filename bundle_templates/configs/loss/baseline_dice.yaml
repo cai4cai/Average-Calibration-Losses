@@ -1,0 +1,8 @@
+##########################
+# LOSS FUNCTION
+##########################
+lossfn:
+  _target_: DiceLoss
+  include_background: true
+  to_onehot_y: true
+  softmax: true

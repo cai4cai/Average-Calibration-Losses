@@ -1,0 +1,9 @@
+2024-12-04 11:16:42,029 ignite.engine.engine.SupervisedEvaluator INFO: Restored all variables from bundles/brats21_baseline_dice_ce_nl/seed_12345/model_key_metric=0.9389.pt
+2024-12-04 11:27:12,694 ignite.engine.engine.SupervisedEvaluator INFO: Got new best metric of mean_dice: 0.9054057598114014
+2024-12-04 11:29:27,006 ignite.engine.engine.SupervisedEvaluator ERROR: Engine run is terminating due to exception: 'list' object has no attribute 'ndim'
+2024-12-04 11:32:05,742 ignite.engine.engine.SupervisedEvaluator INFO: Restored all variables from bundles/brats21_baseline_dice_ce_nl/seed_12345/model_key_metric=0.9389.pt
+2024-12-04 11:48:49,586 ignite.engine.engine.SupervisedEvaluator INFO: Restored all variables from bundles/brats21_baseline_dice_ce_nl/seed_12345/model_key_metric=0.9389.pt
+2024-12-04 11:52:56,292 ignite.engine.engine.SupervisedEvaluator INFO: Restored all variables from bundles/brats21_baseline_dice_ce_nl/seed_12345/model_key_metric=0.9389.pt
+2024-12-04 11:56:56,689 ignite.engine.engine.SupervisedEvaluator INFO: Restored all variables from bundles/brats21_baseline_dice_ce_nl/seed_12345/model_key_metric=0.9389.pt
+2024-12-04 12:09:18,707 ignite.engine.engine.SupervisedEvaluator INFO: Got new best metric of mean_dice: 0.9054057598114014
+2024-12-04 12:13:24,109 ignite.engine.engine.SupervisedEvaluator INFO: Epoch[1] Complete. Time taken: 00:16:27.353

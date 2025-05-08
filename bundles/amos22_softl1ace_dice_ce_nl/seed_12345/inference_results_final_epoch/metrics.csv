@@ -1,0 +1,7 @@
+macro_ece,0.00019142810197081417
+macro_ace,0.08692360669374466
+macro_mce,0.19101575016975403
+micro_ece,9.746085561346263e-05
+micro_ace,0.029059553518891335
+micro_mce,0.05529659241437912
+missing_classes,[False, True, False, True, False, False, True, False, False, False, False, False, True, True, True]

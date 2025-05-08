@@ -1,0 +1,34 @@
+repos:
+  - repo: https://github.com/psf/black
+    rev: 24.1.1
+    hooks:
+    - id: black
+      language_version: python3.10
+      exclude: 'datastats/decathlon/algorithm_templates/'
+
+  - repo: https://github.com/pycqa/flake8
+    rev: 7.0.0
+    hooks:
+    - id: flake8
+      exclude: 'datastats/decathlon/algorithm_templates/'
+
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.4.0
+    hooks:
+    -   id: trailing-whitespace
+
+  - repo: local
+    hooks:
+    - id: remove-debug-dirs
+      name: 'Remove debug directories'
+      entry: './scripts/remove_debug_dirs.sh'
+      language: script
+      stages: [pre-commit]
+
+  # - repo: local
+  #   hooks:
+  #   - id: move-pt-files
+  #     name: 'Move PT Files'
+  #     entry: './scripts/move_pt_files.sh'
+  #     language: script
+  #     stages: [pre-commit]

@@ -1,0 +1,135 @@
+val_interval: 10
+key_metric_n_saved: 5
+
+early_stop: false
+early_stop_patience: 10
+patience: 5
+min_delta: 0.01
+
+validation_batch_size: 1
+val_num_workers: 8
+
+##########################
+# DATASETS
+##########################
+
+val_dataset:
+  _target_: CacheDataset
+  data: '@val_sub'
+  transform: '@val_transforms'
+  cache_num: '@cache_size'
+  num_workers: '@val_num_workers'
+
+val_dataloader:
+  _target_: ThreadDataLoader
+  dataset: '@val_dataset'
+  batch_size: '@validation_batch_size'
+  num_workers: '@val_num_workers'
+
+
+##########################
+# VALIDATION METRICS
+##########################
+key_val_metric:
+  val_mean_dice:
+    _target_: MeanDice  # Could make this a combination of MeanDice - ACE
+    include_background: false
+    output_transform:
+      _target_: sacros.utils.discrete_from_engine
+      keys: ['@pred', '@label']
+      threshold: 0.5
+
+additional_val_metrics:
+  val_ece:
+    _target_: sacros.handlers.CalibrationError
+    num_bins: 20
+    include_background: False
+    calibration_reduction: 'expected'
+    metric_reduction: 'mean'
+    output_transform: $monai.handlers.from_engine([@pred, @label])  # requires class probabilities for prediciton
+  val_ace:
+    _target_: sacros.handlers.CalibrationError
+    num_bins: 20
+    include_background: False
+    calibration_reduction: 'average'
+    metric_reduction: 'mean'
+    output_transform: $monai.handlers.from_engine([@pred, @label])
+  val_mce:
+    _target_: sacros.handlers.CalibrationError
+    num_bins: 20
+    include_background: False
+    calibration_reduction: 'maximum'
+    metric_reduction: 'mean'
+    output_transform: $monai.handlers.from_engine([@pred, @label])
+
+writer:
+  _target_: tensorboardX.SummaryWriter
+  log_dir: '@output_dir'
+
+
+##########################
+# EVALUATOR
+##########################
+
+inferer:
+  _target_: SlidingWindowInferer
+  roi_size: '@val_windows_size'
+  sw_batch_size: '@validation_batch_size'
+  mode: 'gaussian'
+
+val_handlers:
+- _target_: EarlyStopHandler
+  _disabled_: '$not @early_stop'
+  patience: '@early_stop_patience'
+  score_function: '$lambda x: x.state.metrics["val_mean_dice"]' # can also use stopping_fn_from_metric
+  trainer: null
+  min_delta: '@min_delta'
+- _target_: StatsHandler
+  name: null  # use engine.logger as the Logger object to log to
+  output_transform: '$lambda x: None'
+- _target_: LogfileHandler  # log outputs from the validation engine
+  output_dir: '@output_dir'
+- _target_: TensorBoardStatsHandler   # TODO: add learning rate to tensorboard
+  summary_writer: '@writer'
+  tag_name: val
+  output_transform: '$lambda x: None'
+- _target_: TensorBoardImageHandler
+  summary_writer: '@writer'
+  batch_transform: $monai.handlers.from_engine(["image", "label"])
+  output_transform:
+    _target_: sacros.utils.discrete_from_engine
+    keys: ['@pred']
+    threshold: 0.5
+  max_channels: 4
+- _target_: MetricsSaver
+  save_dir: '@output_dir'
+  metrics: '*'
+  metric_details: '*'
+  summary_ops: '*'
+  batch_transform: '@batch_name_transform'
+- _target_: CheckpointSaver
+  save_dir: '@output_dir'
+  save_dict:
+    model: '@network'
+  save_interval: 0  # don't save iterations, just when the metric improves
+  save_final: true
+  epoch_level: true
+  save_key_metric: true
+  key_metric_name: val_mean_dice  # save the checkpoint when this value improves
+  key_metric_n_saved: '@key_metric_n_saved'
+
+
+evaluator:
+  _target_: SupervisedEvaluator
+  device: '@device'
+  val_data_loader: '@val_dataloader'
+  network: '@network'
+  inferer: '@inferer'
+  postprocessing: '@val_postprocessing'
+  key_val_metric: '@key_val_metric'
+  additional_metrics: '@additional_val_metrics'
+  val_handlers: '@val_handlers'
+
+metriclogger:
+  _target_: MetricLogger
+  evaluator: '@evaluator'

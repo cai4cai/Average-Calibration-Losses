@@ -1,0 +1,4 @@
+2025-01-24 16:30:46,631 ignite.engine.engine.SupervisedEvaluator ERROR: Engine run is terminating due to exception: [Errno 2] No such file or directory: 'bundles/kits23_baseline_dice_ce_8/seed_12345/model_final_iteration=20.pt'
+2025-01-24 16:32:45,497 ignite.engine.engine.SupervisedEvaluator INFO: Restored all variables from bundles/kits23_baseline_dice_ce_8/seed_12345/model_final_iteration=39.pt
+2025-01-24 17:35:01,727 ignite.engine.engine.SupervisedEvaluator INFO: Got new best metric of mean_dice: 0.8553446531295776
+2025-01-24 17:35:02,119 ignite.engine.engine.SupervisedEvaluator INFO: Epoch[1] Complete. Time taken: 01:02:16.470

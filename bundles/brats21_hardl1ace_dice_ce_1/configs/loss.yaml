@@ -1,0 +1,24 @@
+##########################
+# LOSS FUNCTION
+##########################
+lossfn:
+  _target_: sacros.losses.HardL1ACEandDiceCELoss
+  ace_weight: 0.33
+  dice_weight: 0.33
+  ce_weight: 0.33
+  to_onehot_y: true
+  ace_params:
+    num_bins: 20
+    include_background: true
+    softmax: true
+    reduction: 'mean'
+    ignore_empty_classes: false
+  dice_params:
+    include_background: true
+    softmax: true
+    reduction: 'mean'
+    squared_pred: true
+    smooth_nr: 0
+    smooth_dr: 1.0e-05
+  ce_params:
+    reduction: 'mean'

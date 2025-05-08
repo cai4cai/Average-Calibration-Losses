@@ -1,0 +1,152 @@
+# Target: Kidney, kidney tumor, and kidney cyst
+# Modality: CT
+# Size: 599 cases (489 Training, 110 Testing)
+# Source: M Health Fairview medical center
+# Challenge: Segmentation of kidney, tumor, and cyst from contrast-enhanced preoperative CT scans (2010-2022)
+
+num_channels: 1
+num_classes: 4
+
+cache_size: 96  # Lower cache size to limit RAM usage of such massive images ~[512, 512, 512]
+num_epochs: 1250
+
+patch_size: [128, 128, 128]
+val_windows_size: [256, 256, 256]
+resample_resolution: [1.0, 1.0, 1.0]
+
+class_names: $['background', 'kidney', 'tumour', 'cyst']  # Original classes
+# class_names: $['background', 'tumour', 'kidney_mass', 'kindey_and_masses']  # HEC classes
+
+batch_name_transform: $sacros.utils.meta_data_batch_transform_dir  # case name in is directory
+image_name_transform: $sacros.utils.meta_data_image_transform_dir
+
+##########################
+# DATASET SETUP
+##########################
+dataset_dir: '../data/kits23/dataset'
+test_seed: 42
+test_split_ratio: 0.2
+
+all_cases: '$sorted(glob.glob(os.path.join(@dataset_dir, "case_*")))'
+all_images: '$[os.path.join(case, "imaging.nii.gz") for case in @all_cases]'
+all_labels: '$[os.path.join(case, "segmentation.nii.gz") for case in @all_cases]'
+all_dicts: "$[{'image': img, 'label': lbl} for img, lbl in zip(@all_images, @all_labels)]"
+
+# Split the all_dicts into training and testing subsets
+partitions_train_test: "$monai.data.partition_dataset(@all_dicts, (0.8, 0.2), shuffle=True, seed=@test_seed)"
+data_dicts: "$@partitions_train_test[0]"  # used for training and validation
+test_sub: "$@partitions_train_test[1]"  # used as the hold out test set
+
+partitions: '$monai.data.partition_dataset(@data_dicts, (9, 1), shuffle=True, seed=@seed)'
+train_sub: '$@partitions[0]'
+val_sub: '$@partitions[1]'
+
+##########################
+# PRE-PROCESSING TRANSFORMATIONS
+##########################
+
+load_transforms:
+  - _target_: LoadImaged
+    keys: ['image', 'label']
+  - _target_: EnsureChannelFirstd
+    keys: ['image', 'label']
+  - _target_: EnsureTyped
+    keys: ['image', 'label']
+  - _target_: EnsureSameShaped
+    keys: ['label']
+    source_key: 'image'
+    allow_missing_keys: true
+    warn: '@debug'
+
+resample_transforms:
+  - _target_: CropForegroundd
+    keys: ['image', 'label']
+    source_key: 'image'
+  - _target_: Orientationd
+    keys: ['image', 'label']
+    axcodes: 'RAS'
+  - _target_: Spacingd
+    keys: ['image', 'label']
+    pixdim: '@resample_resolution'
+    mode: ['bilinear', 'nearest']
+
+normalize_transforms:
+  - _target_: ScaleIntensityRanged
+    keys: ['image']
+    a_min: -54
+    a_max: 242
+    b_min: 0
+    b_max: 1.0
+    clip: true
+
+augmentation_transforms:
+  - _target_: RandAffined
+    keys: ['image', 'label']
+    prob: 0.5
+    rotate_range: [0.1, 0.1, 0.1]
+    shear_range: [0.1, 0.1, 0.1]
+    translate_range: [0.1, 0.1, 0.1]
+    scale_range: [0.1, 0.1, 0.1]
+    mode: ['bilinear', 'nearest']
+    padding_mode: ['constant', 'border']
+  # - _target_: Rand3DElasticd
+  #   keys: ['image', 'label']
+  #   sigma_range: [1, 2]
+  #   magnitude_range: [0, 0.2]
+  #   prob: 0.5
+  #   rotate_range: [0.1, 0.1, 0.1]
+  #   shear_range: [0.1, 0.1, 0.1]
+  #   translate_range: [0.1, 0.1, 0.1]
+  #   scale_range: [0.1, 0.1, 0.1]
+  #   mode: ['bilinear', 'nearest']
+
+crop_transforms:
+  - _target_: RandCropByPosNegLabeld
+    keys: ['image', 'label']
+    label_key: 'label'
+    spatial_size: '@patch_size'
+    pos: 1
+    neg: 1
+    num_samples: 4
+    image_key: 'image'
+    image_threshold: 0
+
+train_transforms:
+  - _target_: Compose
+    transforms: $@load_transforms + @resample_transforms + @normalize_transforms + @augmentation_transforms + @crop_transforms
+
+val_transforms:
+  _target_: Compose
+  transforms: $@load_transforms + @resample_transforms + @normalize_transforms
+
+##########################
+# POST-PROCESSING AND INFERENCE
+##########################
+# postprocessing:  # This results in the loss being calculated on the HEC classes
+#   _target_: Compose
+#   transforms:
+#   - _target_: sacros.transforms.ConvertToKits23Classesd  # labelmap to discrete "one-hot" kits classes
+#     keys: '@label'
+#   - _target_: sacros.transforms.ConvertToKits23ClassesSoftmaxd  # softmax predicion to combined softmax kits classes
+#     keys: '@pred'
+
+# val_postprocessing:   # validation and inference with HEC classes
+#   _target_: Compose
+#   transforms:
+#   - _target_: Activationsd  # softmax prediction
+#     keys: '@pred'
+#     softmax: true
+#   - _target_: sacros.transforms.ConvertToKits23Classesd
+#     keys: '@label'
+#   - _target_: sacros.transforms.ConvertToKits23ClassesSoftmaxd
+#     keys: '@pred'
+
+val_postprocessing:  # validation and inference without HEC classes
+  _target_: Compose
+  transforms:
+  - _target_: Activationsd
+    keys: '@pred'
+    softmax: true
+  - _target_: AsDiscreted
+    keys: '@label'
+    to_onehot: '@num_classes'
