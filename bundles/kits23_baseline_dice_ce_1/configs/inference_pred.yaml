@@ -1,7 +1,7 @@
 ##########################
 # PATH DEFINITIONS
 ##########################
-inference_dir: '$os.path.join(@output_dir, "inference_results")'
+inference_dir: '$os.path.join(@output_dir, "inference_predictions")'
 # Get checkpoint with highest validation metric:
 ckpt_path: '$max(glob.glob(os.path.join(@output_dir, "model_key_metric=*.pt")), key=lambda f: float(os.path.basename(f).split("=")[1].rstrip(".pt")), default="none")'
 
@@ -11,26 +11,15 @@ ckpt_path: '$max(glob.glob(os.path.join(@output_dir, "model_key_metric=*.pt")), 
 ##########################
 
 testing_dataset:
-  _target_: PersistentDataset
-  data: '@testing_sub'
-  transform:
-    _target_: Compose
-    transforms: $@base_transforms + @val_transforms
-  cache_dir: $@bundle_root + '/testing_cache'
-
+  _target_: Dataset
+  data: '@test_sub'
+  transform: '@val_transforms'
 
 testing_dataloader:
   _target_: DataLoader
   dataset: '@testing_dataset'
-  batch_size: '@validation_batch_size'
-  num_workers: '@val_num_workers'
-
-
-inferer:
-  _target_: SlidingWindowInferer
-  roi_size: '@val_windows_size'
-  sw_batch_size: '@validation_batch_size'
-  mode: 'gaussian'
+  batch_size: 1
+  num_workers: 4
 
 
 ##########################
@@ -42,9 +31,9 @@ postprocessing:
   - _target_: Activationsd  # softmax prediction
     keys: '@pred'
     softmax: true
-  - _target_: Orientationd  # Put back into original BraTS orientation
-    keys: '@pred'
-    axcodes: LPS
+  # - _target_: Orientationd  # This can be used to put volume back into original orientation
+  #   keys: '@pred'
+  #   axcodes: LPS
   - _target_: SaveImaged  # Save the segmentation probability map
     keys: '@pred'
     meta_keys: 'pred_meta_dict'
@@ -77,6 +66,13 @@ handlers:
 ##########################
 # INFERENCE EVALUATOR
 ##########################
+
+inferer:
+  _target_: SlidingWindowInferer
+  roi_size: '@val_windows_size'
+  sw_batch_size: 1
+  mode: 'gaussian'
+
 evaluator:
   _target_: SupervisedEvaluator
   device: '@device'
