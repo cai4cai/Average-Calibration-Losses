@@ -64,14 +64,7 @@ def copy_configs(data, loss, bundle_path, template_root):
 
     # Loss and Data specific configs with standardized naming
     loss_config_path = os.path.join(template_root, "loss", f"{loss}.yaml")
-
-    if data.startswith("decathlon_"):
-        task_info = data.split("_", 1)[1]  # to handle decathlon data config
-        data_config_path = os.path.join(
-            template_root, "data", "decathlon", f"{task_info}.yaml"
-        )
-    else:
-        data_config_path = os.path.join(template_root, "data", f"{data}.yaml")
+    data_config_path = os.path.join(template_root, "data", f"{data}.yaml")
 
     shutil.copy(loss_config_path, os.path.join(new_bundle_configs, "loss.yaml"))
     shutil.copy(data_config_path, os.path.join(new_bundle_configs, "data.yaml"))

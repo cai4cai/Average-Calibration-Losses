@@ -12,7 +12,7 @@ def get_parser():
         "--bundle",
         type=str,
         required=True,
-        help="Bundle directory name, e.g., decathlon_T02_Heart_softl1ace_dice_ce_20240513",
+        help="Bundle directory name, e.g., brats21_softl1ace_dice_ce_1",
     )
     parser.add_argument(
         "--mode",
