@@ -2,18 +2,11 @@ FROM nvidia/cuda:12.4.0-runtime-ubuntu22.04
 
 ENV DEBIAN_FRONTEND=noninteractive
 
-# Install system dependencies and Python 3.11
+# Install system dependencies and pip for the default Python
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
         software-properties-common curl sudo \
-        git && \
-    add-apt-repository -y ppa:deadsnakes/ppa && \
-    apt-get update && \
-    apt-get install -y --no-install-recommends \
-        python3.11 python3.11-venv python3.11-dev python3-pip && \
-    ln -sf /usr/bin/python3.11 /usr/bin/python3 && \
-    ln -sf /usr/bin/python3.11 /usr/bin/python && \
-    python3.11 -m pip install --upgrade pip && \
+        git python3-pip python3-venv python3-dev && \
     rm -rf /var/lib/apt/lists/*
 
 # CUDA environment variables
@@ -22,16 +15,19 @@ ENV PATH=${CUDA_HOME}/bin:$PATH
 ENV LD_LIBRARY_PATH=${CUDA_HOME}/lib64:$LD_LIBRARY_PATH
 
 # Install Python dependencies
-COPY environment.yml /tmp/environment.yml
-RUN pip install --no-cache-dir -r /tmp/environment.yml
+COPY requirements.txt /tmp/requirements.txt
+RUN pip3 install --no-cache-dir -r /tmp/requirements.txt
+
+# Create 'python' symlink for convenience
+RUN ln -s /usr/bin/python3 /usr/local/bin/python
 
 # Create non-root user
-ARG USERNAME=vscode
-ARG USER_UID=1000
-ARG USER_GID=$USER_UID
-RUN groupadd --gid $USER_GID $USERNAME && \
-    useradd --uid $USER_UID --gid $USER_GID -m $USERNAME -s /bin/bash && \
-    echo "$USERNAME ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/$USERNAME && \
-    chmod 0440 /etc/sudoers.d/$USERNAME
+ARG USER
+ARG USER_ID
+ARG GROUP_ID
+RUN groupadd --gid $GROUP_ID $USER && \
+    useradd --uid $USER_ID --gid $GROUP_ID -m $USER -s /bin/bash && \
+    echo "$USER ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/$USER && \
+    chmod 0440 /etc/sudoers.d/$USER
 
 CMD ["bash"]

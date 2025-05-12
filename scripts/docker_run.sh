@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Usage example:
-# ./docker_run.sh --mode train --bundle decathlon_T02_Heart_softl1ace_dice_ce_20240513 --seed 12345 [--gpu <gpu_number>] [--cpus <cpus>] [--shm-size <shm_size>]
+# ./docker_run.sh --mode train --bundle acdc17_softl1ace_dice_ce_769fc24c --seed 12345 [--gpu <gpu_number>] [--cpus <cpus>] [--shm-size <shm_size>]
 
 # Get the directory of the current script
 SCRIPT_DIR="$(dirname "$0")"
@@ -73,6 +73,7 @@ docker run -d --rm \
 # --restart on-failure \   # Incompatible with --rm  choose one
 
 # Explanation of options:
+# -d: Run the container in detached mode (in the background)
 # --rm: Automatically remove the container when it exits
 # --gpus: Specify which GPU to use
 # --cpuset-cpus: Specify which CPUs to use
