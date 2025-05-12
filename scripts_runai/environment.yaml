@@ -1,0 +1,11 @@
+name: sacros
+channels:
+  - conda-forge
+dependencies:
+  - monai
+  - ignite
+  - nibabel
+  - tensorboardx
+  - matplotlib
+  - seaborn
+  - tabulate

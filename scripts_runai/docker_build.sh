@@ -7,7 +7,7 @@ PYTORCH_VERSION="2.5.0"
 CUDATOOLKIT_VERSION="12.4"
 PYTHON_VERSION="3.12"
 
-docker build ../docker -f ../docker/Dockerfile \
+docker build . -f ./Dockerfile \
  --tag "${docker_tag}" \
  --build-arg USER_ID="$(id -u)" \
  --build-arg GROUP_ID="$(id -g)" \

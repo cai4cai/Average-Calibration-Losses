@@ -14,7 +14,7 @@ PROJECT_DIR="$(realpath "$SCRIPT_DIR/..")"
 DATA_DIR="$(realpath "$PROJECT_DIR/../data")"
 
 # Docker image name
-IMAGE_NAME="${USER}/sacros:latest"
+IMAGE_NAME="${USER}/acl:latest"
 
 # Default values for optional arguments
 GPU=0         # Default GPU index

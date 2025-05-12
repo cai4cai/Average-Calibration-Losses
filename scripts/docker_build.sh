@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Create a "tag" or name for the image
-docker_tag=${USER}/sacros:latest
+docker_tag=${USER}/acl:latest
 
 CUDA_VERSION="12.4.0"
 PYTORCH_VERSION="2.5.0"

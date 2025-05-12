@@ -29,22 +29,6 @@ runai submit tb-"${job_name}" \
   -e MPLCONFIGDIR="/tmp/" \
   -- bash /nfs/home/${USER}/SACROS/scripts_runai/startup.sh "$bundle" "$mode" "$seed"
 
-# CURVAS submission:
-# runai submit tb-"${job_name}" \
-#   -i aicregistry:5000/${USER}/sacros \
-#   -p tbarfoot \
-#   -g 1 \
-#   --node-type "A100" \
-#   --cpu "16" \
-#   --cpu-limit "20" \
-#   --memory "${cpu_memory}" \
-#   --memory-limit "${memory_limit}" \
-#   --host-ipc \
-#   -v /nfs:/nfs \
-#   -e MPLCONFIGDIR="/tmp/" \
-#   -- bash /nfs/home/${USER}/SACROS/scripts_runai/startup.sh "$bundle" "$mode" "$seed"
-
-
   #  -g 1 \
   #  --node-type "A100" \
-    # --node-type "dgx1" \
+  # --node-type "dgx1" \
