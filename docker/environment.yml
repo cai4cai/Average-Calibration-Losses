@@ -1,4 +1,4 @@
-name: sacros
+name: src
 channels:
   - conda-forge
 dependencies:

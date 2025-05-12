@@ -13,8 +13,8 @@ resample_resolution: [1.0, 1.0, 5.0]
 
 class_names: $['background', 'spleen', 'right_kidney', 'left_kidney', 'gallbladder', 'esophagus', 'liver', 'stomach', 'aorta', 'inferior_vena_cava', 'pancreas', 'right_adrenal_gland', 'left_adrenal_gland', 'duodenum', 'bladder', 'prostate/uterus']
 
-batch_name_transform: $sacros.utils.meta_data_batch_transform
-image_name_transform: $sacros.utils.meta_data_image_transform
+batch_name_transform: $src.utils.meta_data_batch_transform
+image_name_transform: $src.utils.meta_data_image_transform
 
 learning_rate: 0.0002
 

@@ -38,34 +38,34 @@ key_metric:
     _target_: MeanDice
     include_background: false
     output_transform:
-      _target_: sacros.utils.discrete_from_engine
+      _target_: src.utils.discrete_from_engine
       keys: ['@pred', '@label']
       threshold: 0.5
 
 metrics:
   ece:
-    _target_: sacros.handlers.CalibrationError
+    _target_: src.handlers.CalibrationError
     num_bins: '@num_bins'
     include_background: False
     calibration_reduction: 'expected'
     metric_reduction: 'mean'
     output_transform: $monai.handlers.from_engine([@pred, @label])  # requires class probabilities for prediciton
   ace:
-    _target_: sacros.handlers.CalibrationError
+    _target_: src.handlers.CalibrationError
     num_bins: '@num_bins'
     include_background: False
     calibration_reduction: 'average'
     metric_reduction: 'mean'
     output_transform: $monai.handlers.from_engine([@pred, @label])
   mce:
-    _target_: sacros.handlers.CalibrationError
+    _target_: src.handlers.CalibrationError
     num_bins: '@num_bins'
     include_background: False
     calibration_reduction: 'maximum'
     metric_reduction: 'mean'
     output_transform: $monai.handlers.from_engine([@pred, @label])
   reliability_diagram:
-    _target_: sacros.handlers.ReliabilityDiagramHandler
+    _target_: src.handlers.ReliabilityDiagramHandler
     num_classes: '@num_classes'
     num_bins: '@num_bins'
     include_background: False
@@ -74,7 +74,7 @@ metrics:
     class_names: '@class_names'
     draw_case_diagrams: True
     draw_case_histograms: True
-    case_name_transform: $sacros.utils.meta_data_image_transform
+    case_name_transform: $src.utils.meta_data_image_transform
     print_case_ece: True
     print_case_ace: True
     print_case_mce: True
@@ -118,7 +118,7 @@ handlers:
   save_dir: '@inference_dir'
   metrics: '$["mean_dice", "ece", "ace", "mce"]'
   metric_details: '$["mean_dice", "ece", "ace", "mce"]'
-  batch_transform: $sacros.utils.meta_data_batch_transform
+  batch_transform: $src.utils.meta_data_batch_transform
   summary_ops: '*'
 
 

@@ -4,7 +4,7 @@ import torch
 
 import warnings
 from collections.abc import Callable
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Sequence
 
 from ..metrics import (
     CalibrationErrorMetric,
@@ -17,6 +17,7 @@ from monai.handlers.ignite_metric import IgniteMetricHandler
 from monai.handlers.tensorboard_handlers import TensorBoardHandler
 from monai.handlers.utils import write_metrics_reports
 from monai.metrics.utils import ignore_background
+from monai.handlers import decollate_batch
 
 from monai.config import IgniteInfo
 from monai.utils import is_scalar, min_version, optional_import
@@ -53,12 +54,13 @@ __all__ = ["CalibrationError", "ReliabilityDiagramHandler", "CalibrationErrorHan
 class BinningKeys(StrEnum):
     """
     Keys for storing binning data in the engine's state.
-    
+
     Attributes:
         ITERATION_BINNING: Key for storing binning data after each iteration.
         RUNNING_BINNING_DATA: Key for storing running binning data across iterations.
         AGGREGATED_BINNING_DATA: Key for storing aggregated binning data after each epoch.
     """
+
     ITERATION_BINNING = "iteration_binning"
     RUNNING_BINNING_DATA = "running_binning_data"
     AGGREGATED_BINNING_DATA = "aggregated_binning_data"
@@ -73,15 +75,14 @@ class BinningDataHandler:
     The binning data includes mean predicted probability per bin, mean ground truth per bin, and bin counts.
     """
 
-    def __init__(self, num_bins: int = 20, 
-                 include_background: bool = True, 
-                 right: bool = False):
-        
+    def __init__(
+        self, num_bins: int = 20, include_background: bool = True, right: bool = False
+    ):
+
         self.num_bins = num_bins
         self.include_background = include_background
         self.right = right
         self.running_binning_data = []
-        
 
     def attach(self, engine: Engine) -> None:
         """
@@ -97,18 +98,23 @@ class BinningDataHandler:
     def __call__(self, engine: Engine) -> None:
         """
         This is called after every iteration to compute and store the binning data in `engine.state`.
-        
+
         Args:
             engine: The Ignite Engine to which this handler is attached.
         """
-        y_pred, y = engine.state.output[Keys.PRED], engine.state.output[Keys.LABEL]  # TODO: could also define an output_transform to get these values
+        y_pred, y = (
+            engine.state.output[Keys.PRED],
+            engine.state.output[Keys.LABEL],
+        )  # TODO: could also define an output_transform to get these values
         if not self.include_background:
             y_pred, y = ignore_background(y_pred=y_pred, y=y)
-            
-        binning_data = calibration_binning(y_pred, y, num_bins=self.num_bins, right=self.right) 
+
+        binning_data = calibration_binning(
+            y_pred, y, num_bins=self.num_bins, right=self.right
+        )
         # Binng data is mean_p_per_bin, mean_gt_per_bin, bin_counts. Each one has shape: [batch_size, num_channels, num_bins]
         binning_data = torch.stack(binning_data, dim=-2)
-        
+
         # Store the binning data in the engine state
         engine.state.output[BinningKeys.ITERATION_BINNING] = binning_data
 
@@ -123,13 +129,19 @@ class BinningDataHandler:
             engine: The Ignite Engine to which this handler is attached.
         """
         # Aggregate the binning data across iterations
-        running_binning_data = torch.cat(self.running_binning_data, dim=0)  # shape: [N, C, 3, num_bins]
+        running_binning_data = torch.cat(
+            self.running_binning_data, dim=0
+        )  # shape: [N, C, 3, num_bins]
         engine.state.output[BinningKeys.RUNNING_BINNING_DATA] = running_binning_data
 
-        aggregated_binning_data = _aggregate_binning_data(running_binning_data, aggregate_classes=False)  # shape: [C, 3, num_bins]
+        aggregated_binning_data = _aggregate_binning_data(
+            running_binning_data, aggregate_classes=False
+        )  # shape: [C, 3, num_bins]
 
         # Store the aggregated binning data in the engine state
-        engine.state.output[BinningKeys.AGGREGATED_BINNING_DATA] = aggregated_binning_data
+        engine.state.output[BinningKeys.AGGREGATED_BINNING_DATA] = (
+            aggregated_binning_data
+        )
 
         # Reset the aggregated binning data for the next epoch
         self.running_binning_data = []
@@ -335,17 +347,25 @@ class CalibrationErrorHandler:
             engine: The Ignite Engine to which this handler is attached.
         """
         # Check if there are any missing classes in the ground truth label: NOTE: This is a very clunky way of doing it
-        missing_classes = self.check_missing_classes(engine)      
-        self.missing_classes.append(missing_classes)  # Store missing classes information
-        
-        y_pred, y = engine.state.output[0]['pred'].unsqueeze(0), engine.state.output[0]['label'].unsqueeze(0)  # add in batch dim for simplicity
+        missing_classes = self.check_missing_classes(engine)
+        self.missing_classes.append(
+            missing_classes
+        )  # Store missing classes information
+
+        y_pred, y = engine.state.output[0]["pred"].unsqueeze(0), engine.state.output[0][
+            "label"
+        ].unsqueeze(
+            0
+        )  # add in batch dim for simplicity
         # TODO: could also define an output_transform to get these values
         # TODO: this is hard coded just to work with single batch element provided by engine
         if not self.include_background:
             y_pred, y = ignore_background(y_pred=y_pred, y=y)
 
         binning_data = calibration_binning(y_pred, y, num_bins=self.num_bins)
-        binning_data = torch.stack(binning_data, dim=-2).squeeze(0)   # remove batch dim. shape: [num_channels, 3, num_bins]
+        binning_data = torch.stack(binning_data, dim=-2).squeeze(
+            0
+        )  # remove batch dim. shape: [num_channels, 3, num_bins]
         self.running_binning_data.append(binning_data)
 
         macro_errors = self.compute_calibration_errors(binning_data)
@@ -356,7 +376,7 @@ class CalibrationErrorHandler:
             meta_data = decollate_batch(meta_data)
         for m in meta_data:
             self._filenames.append(f"{m.get(ImageMetaKey.FILENAME_OR_OBJ)}")
-            
+
     def check_missing_classes(self, engine: Engine) -> torch.Tensor:
         """
         Check if there are any missing classes in the ground truth label.
@@ -367,16 +387,18 @@ class CalibrationErrorHandler:
         Returns:
             torch.Tensor: A tensor of shape [C] with 1s for missing classes and 0s for present classes.
         """
-        label = engine.state.batch[0]['label']  # should be shape [1, H, W, D]
-        pred = engine.state.output[0]['pred']  # Should be OH [C, H, W, D]
+        label = engine.state.batch[0]["label"]  # should be shape [1, H, W, D]
+        pred = engine.state.output[0]["pred"]  # Should be OH [C, H, W, D]
         num_classes = pred.shape[0]
 
         present_classes = label.unique().tolist()
-        missing_classes = torch.tensor([1 if c not in present_classes else 0 for c in range(num_classes)])
-        
+        missing_classes = torch.tensor(
+            [1 if c not in present_classes else 0 for c in range(num_classes)]
+        )
+
         if not self.include_background:
             missing_classes = missing_classes[1:]
-            
+
         return missing_classes
 
     def compute_calibration_errors(self, binning_data):
@@ -389,11 +411,17 @@ class CalibrationErrorHandler:
         Returns:
             dict: A dictionary containing expected, average, and maximum calibration errors.
         """
-        mean_p_per_bin, mean_gt_per_bin, bin_counts = binning_data[:, 0, :], binning_data[:, 1, :], binning_data[:, 2, :]
+        mean_p_per_bin, mean_gt_per_bin, bin_counts = (
+            binning_data[:, 0, :],
+            binning_data[:, 1, :],
+            binning_data[:, 2, :],
+        )
 
         abs_diff = torch.abs(mean_p_per_bin - mean_gt_per_bin)
 
-        expected_error = torch.nansum(abs_diff * bin_counts, dim=-1) / torch.sum(bin_counts, dim=-1)
+        expected_error = torch.nansum(abs_diff * bin_counts, dim=-1) / torch.sum(
+            bin_counts, dim=-1
+        )
         average_error = torch.nanmean(abs_diff, dim=-1)
         abs_diff[torch.isnan(abs_diff)] = 0
         max_error = torch.max(abs_diff, dim=-1).values
@@ -411,11 +439,17 @@ class CalibrationErrorHandler:
         Args:
             engine: The Ignite Engine to which this handler is attached.
         """
-        running_binning_data = torch.stack(self.running_binning_data, dim=0)   #  [N, C, 3, num_bins]
-        aggregated_binning_data = _aggregate_binning_data(running_binning_data)  # [C, 3, num_bins]
+        running_binning_data = torch.stack(
+            self.running_binning_data, dim=0
+        )  # [N, C, 3, num_bins]
+        aggregated_binning_data = _aggregate_binning_data(
+            running_binning_data
+        )  # [C, 3, num_bins]
 
         micro_errors = self.compute_calibration_errors(aggregated_binning_data)
-        self.micro_errors.append(micro_errors)  # TODO: this doesn't need to be a list as it only has one 
+        self.micro_errors.append(
+            micro_errors
+        )  # TODO: this doesn't need to be a list as it only has one
 
         self.save_to_csv(engine)
 
@@ -436,17 +470,33 @@ class CalibrationErrorHandler:
         if not os.path.exists(save_dir):
             os.makedirs(save_dir)
 
-        macro_errors = {k: torch.stack([e[k] for e in self.macro_errors]) for k in self.macro_errors[0]}
-        micro_errors = {k: torch.stack([e[k] for e in self.micro_errors]) for k in self.micro_errors[0]}
-        missing_classes_stacked = torch.stack(self.missing_classes)  # Stack missing classes to shape [N, C]
+        macro_errors = {
+            k: torch.stack([e[k] for e in self.macro_errors])
+            for k in self.macro_errors[0]
+        }
+        micro_errors = {
+            k: torch.stack([e[k] for e in self.micro_errors])
+            for k in self.micro_errors[0]
+        }
+        missing_classes_stacked = torch.stack(
+            self.missing_classes
+        )  # Stack missing classes to shape [N, C]
 
         metrics = {f"macro_{k}": v.mean().item() for k, v in macro_errors.items()}
         metrics.update({f"micro_{k}": v.mean().item() for k, v in micro_errors.items()})
-        metrics.update({"missing_classes": missing_classes_stacked.any(dim=0).tolist()})  # Add missing classes metric
+        metrics.update(
+            {"missing_classes": missing_classes_stacked.any(dim=0).tolist()}
+        )  # Add missing classes metric
 
-        metric_details = {f"macro_{k}": v.cpu().numpy() for k, v in macro_errors.items()}
-        metric_details.update({f"micro_{k}": v.cpu().numpy() for k, v in micro_errors.items()})
-        metric_details.update({"missing_classes": missing_classes_stacked.cpu().numpy()})  # Add missing classes details
+        metric_details = {
+            f"macro_{k}": v.cpu().numpy() for k, v in macro_errors.items()
+        }
+        metric_details.update(
+            {f"micro_{k}": v.cpu().numpy() for k, v in micro_errors.items()}
+        )
+        metric_details.update(
+            {"missing_classes": missing_classes_stacked.cpu().numpy()}
+        )  # Add missing classes details
 
         write_metrics_reports(
             save_dir=save_dir,
@@ -457,5 +507,3 @@ class CalibrationErrorHandler:
             deli=self.delimiter,
             output_type=self.output_type,
         )
-
-# TODO: options for missing classes is either to try and save summaries with and without missing classes here, or just keep the data as it is, but save another csv called "missing_classes.csv" with the missing classes and then process that from the compile results, but we'd also have to change the way the results are computed and calculate it from the _raw files, but only for the missing class metrics.

@@ -25,8 +25,8 @@ testing_dataset_dir: '../data/brats/BraTS2021_TestingData_complete'  # using thi
 testing_imgs: "$sorted(glob.glob(@testing_dataset_dir+'/BraTS2021_*/BraTS2021_*_t1.nii.gz'))"
 test_sub: '$[{"t1": i, "t1ce": i.replace("t1","t1ce"), "t2": i.replace("t1","t2"), "flair": i.replace("t1","flair"), "label": i.replace("t1","seg_c")} for i in @testing_imgs]'
 
-batch_name_transform: $sacros.utils.meta_data_batch_transform
-image_name_transform: $sacros.utils.meta_data_image_transform
+batch_name_transform: $src.utils.meta_data_batch_transform
+image_name_transform: $src.utils.meta_data_image_transform
 
 patch_size: [224, 224, 144]
 val_windows_size: [240, 240, 160]
@@ -126,9 +126,9 @@ val_transforms:
 # postprocessing:
 #   _target_: Compose
 #   transforms:
-#   - _target_: sacros.brats_transforms.ConvertToBratsClassesd  # labelmap to discrete "one-hot" brats classes
+#   - _target_: src.brats_transforms.ConvertToBratsClassesd  # labelmap to discrete "one-hot" brats classes
 #     keys: '@label'
-#   - _target_: sacros.brats_transforms.ConvertToBratsClassesSoftmaxd  # softmax predicion to combined softmax brats classes
+#   - _target_: src.brats_transforms.ConvertToBratsClassesSoftmaxd  # softmax predicion to combined softmax brats classes
 #     keys: '@pred'
 
 # val_postprocessing:
@@ -137,9 +137,9 @@ val_transforms:
 #   - _target_: Activationsd  # softmax prediction
 #     keys: '@pred'
 #     softmax: true
-#   - _target_: sacros.brats_transforms.ConvertToBratsClassesd  # labelmap to discrete "one-hot" brats classes
+#   - _target_: src.brats_transforms.ConvertToBratsClassesd  # labelmap to discrete "one-hot" brats classes
 #     keys: '@label'
-#   - _target_: sacros.brats_transforms.ConvertToBratsClassesSoftmaxd  # softmax predicion to combined softmax brats classes
+#   - _target_: src.brats_transforms.ConvertToBratsClassesSoftmaxd  # softmax predicion to combined softmax brats classes
 #     keys: '@pred'
 
 val_postprocessing:  # inference_results_no_HEC

@@ -1,7 +1,7 @@
 import pytest
 import torch
 from monai.transforms import Compose
-from sacros.transforms import (
+from src.transforms import (
     AverageAnnotationsd,
     RandomWeightedAverageAnnotationsd,
     ConvertToKits23ClassesSoftmaxd,

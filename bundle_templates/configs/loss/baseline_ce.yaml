@@ -2,7 +2,7 @@
 # LOSS FUNCTION
 ##########################
 lossfn:
-  _target_: sacros.losses.CrossEntropyLoss
+  _target_: src.losses.CrossEntropyLoss
   to_onehot_y: true
   ce_params:
     reduction: 'mean'

@@ -1,6 +1,6 @@
 import torch
 import pytest
-from sacros.brats_transforms import (
+from src.brats_transforms import (
     ConvertToBratsClassesd,
     ConvertToBratsClassesSoftmaxd,
 )

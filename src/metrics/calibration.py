@@ -8,8 +8,8 @@ from monai.utils import MetricReduction
 from monai.utils.enums import StrEnum
 from monai.metrics import CumulativeIterationMetric
 
-# from sacros.losses import hard_binned_calibration  # use local calibration_binning instead
-from sacros.visualize import (
+# from src.losses import hard_binned_calibration  # use local calibration_binning instead
+from src.visualize import (
     draw_case_reliability_diagrams,
     draw_dataset_reliability_diagrams,
 )
@@ -321,7 +321,9 @@ def _aggregate_binning_data(
 
     if aggregate_classes:
         # Aggregating across cases and classes
-        mean_p_per_bin_aggregated = torch.nanmean(mean_p_per_bin, dim=(0, 1)).unsqueeze(0)
+        mean_p_per_bin_aggregated = torch.nanmean(mean_p_per_bin, dim=(0, 1)).unsqueeze(
+            0
+        )
         bin_counts_aggregated = torch.nansum(bin_counts, dim=(0, 1)).unsqueeze(0)
         gt_sum_per_bin = torch.nansum(mean_gt_per_bin * bin_counts, dim=(0, 1))
     else:
@@ -329,9 +331,11 @@ def _aggregate_binning_data(
         mean_p_per_bin_aggregated = torch.nanmean(mean_p_per_bin, dim=0)
         bin_counts_aggregated = torch.nansum(bin_counts, dim=0)
         gt_sum_per_bin = torch.nansum(mean_gt_per_bin * bin_counts, dim=0)
-        
-    mean_gt_per_bin_aggregated = gt_sum_per_bin/bin_counts_aggregated  # divide by zero results in nan
-        
+
+    mean_gt_per_bin_aggregated = (
+        gt_sum_per_bin / bin_counts_aggregated
+    )  # divide by zero results in nan
+
     # torch.where(  # ALTERNATIVELY CAN DO THIS to handle divide by zero
     #     bin_counts_aggregated > 0,
     #     gt_sum_per_bin / bin_counts_aggregated,

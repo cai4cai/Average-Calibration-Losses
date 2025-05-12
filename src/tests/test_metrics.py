@@ -8,14 +8,14 @@ from pathlib import Path
 import hashlib
 import pickle
 
-from sacros.metrics import (
+from src.metrics import (
     calibration_binning,
     CalibrationErrorMetric,
     CalibrationReduction,
     ReliabilityDiagramMetric,
 )
 
-from sacros.metrics.calibration import calculate_heatmap_from_bins, _aggregate_binning_data
+from src.metrics.calibration import calculate_heatmap_from_bins, _aggregate_binning_data
 
 from monai.metrics.utils import ignore_background
 import unittest.mock as mock
@@ -494,8 +494,18 @@ test_cases_aggregate_binning_data = [
             [0.4, 0.65, 0.15, 0.65],
         ],
         "expected_mean_gt_per_bin": [
-            [(0.5 * 2 + 0.4 * 4) / 6, (0.3 * 4 + 0.2 * 2) / 6, (0.2 * 2 + 0.3 * 3) / 5, (0.9 * 1 + 0.7 * 1) / 2],
-            [(0.6 * 3 + 0.7 * 1) / 4, (0.5 * 1 + 0.9 * 5) / 6, (0.4 * 4 + 0.6 * 2) / 6, (1.0 * 2 + 0.4 * 2) / 4],
+            [
+                (0.5 * 2 + 0.4 * 4) / 6,
+                (0.3 * 4 + 0.2 * 2) / 6,
+                (0.2 * 2 + 0.3 * 3) / 5,
+                (0.9 * 1 + 0.7 * 1) / 2,
+            ],
+            [
+                (0.6 * 3 + 0.7 * 1) / 4,
+                (0.5 * 1 + 0.9 * 5) / 6,
+                (0.4 * 4 + 0.6 * 2) / 6,
+                (1.0 * 2 + 0.4 * 2) / 4,
+            ],
         ],
         "expected_bin_counts_aggregated": [
             [6.0, 6.0, 5.0, 2.0],
@@ -506,12 +516,24 @@ test_cases_aggregate_binning_data = [
         "case_name": "aggregation_with_nan_bins",
         "binning_data": [
             [
-                [[0.2, float("nan"), 0.6, 0.8], [0.5, float("nan"), 0.2, 0.9], [2, 0, 2, 1]],
-                [[float("nan"), 0.7, 0.1, 0.5], [float("nan"), 0.5, 0.4, 1.0], [0, 1, 4, 2]],
+                [
+                    [0.2, float("nan"), 0.6, 0.8],
+                    [0.5, float("nan"), 0.2, 0.9],
+                    [2, 0, 2, 1],
+                ],
+                [
+                    [float("nan"), 0.7, 0.1, 0.5],
+                    [float("nan"), 0.5, 0.4, 1.0],
+                    [0, 1, 4, 2],
+                ],
             ],
             [
-                [[0.1, 0.5,          0.4, 0.6], [0.4, 0.2, 0.3,          0.7], [4, 2, 3, 1]],
-                [[0.5, 0.6, float("nan"), 0.8], [0.7, 0.9, float("nan"), 0.4], [1, 5, 0, 2]],
+                [[0.1, 0.5, 0.4, 0.6], [0.4, 0.2, 0.3, 0.7], [4, 2, 3, 1]],
+                [
+                    [0.5, 0.6, float("nan"), 0.8],
+                    [0.7, 0.9, float("nan"), 0.4],
+                    [1, 5, 0, 2],
+                ],
             ],
         ],
         "aggregate_classes": False,
@@ -538,16 +560,28 @@ test_cases_aggregate_binning_data = [
             [1.0, 6.0, 4.0, 4.0],
         ],
     },
-        {
+    {
         "case_name": "aggregation_with_nan_bins_2",  # same as before but with a nan in same place in both cases
         "binning_data": [
             [
-                [[0.2, float("nan"), 0.6, 0.8],          [0.5, float("nan"), 0.2,          0.9], [2, 0, 2, 1]],
-                [[float("nan"), 0.7, float("nan"), 0.5], [float("nan"), 0.5, float("nan"), 1.0], [0, 1, 0, 2]],
+                [
+                    [0.2, float("nan"), 0.6, 0.8],
+                    [0.5, float("nan"), 0.2, 0.9],
+                    [2, 0, 2, 1],
+                ],
+                [
+                    [float("nan"), 0.7, float("nan"), 0.5],
+                    [float("nan"), 0.5, float("nan"), 1.0],
+                    [0, 1, 0, 2],
+                ],
             ],
             [
-                [[0.1, 0.5,          0.4, 0.6],          [0.4, 0.2, 0.3,                   0.7], [4, 2, 3, 1]],
-                [[0.5, 0.6, float("nan"), 0.8],          [0.7, 0.9,          float("nan"), 0.4], [1, 5, 0, 2]],
+                [[0.1, 0.5, 0.4, 0.6], [0.4, 0.2, 0.3, 0.7], [4, 2, 3, 1]],
+                [
+                    [0.5, 0.6, float("nan"), 0.8],
+                    [0.7, 0.9, float("nan"), 0.4],
+                    [1, 5, 0, 2],
+                ],
             ],
         ],
         "aggregate_classes": False,
@@ -604,6 +638,7 @@ test_cases_aggregate_binning_data = [
     },
 ]
 
+
 @pytest.mark.parametrize(
     "case",
     test_cases_aggregate_binning_data,
@@ -624,15 +659,27 @@ def test_aggregate_binning_data(case):
     bin_counts_aggregated = binning_data_aggregated[:, 2, :]
 
     # Prepare expected values
-    expected_mean_p_per_bin = torch.tensor(case["expected_mean_p_per_bin"], dtype=torch.float32)
-    expected_mean_gt_per_bin = torch.tensor(case["expected_mean_gt_per_bin"], dtype=torch.float32)
-    expected_bin_counts_aggregated = torch.tensor(case["expected_bin_counts_aggregated"], dtype=torch.float32)
+    expected_mean_p_per_bin = torch.tensor(
+        case["expected_mean_p_per_bin"], dtype=torch.float32
+    )
+    expected_mean_gt_per_bin = torch.tensor(
+        case["expected_mean_gt_per_bin"], dtype=torch.float32
+    )
+    expected_bin_counts_aggregated = torch.tensor(
+        case["expected_bin_counts_aggregated"], dtype=torch.float32
+    )
 
     # Assertions to verify correctness
-    assert torch.allclose(mean_p_per_bin_aggregated, expected_mean_p_per_bin, atol=1e-4, equal_nan=True)
-    assert torch.allclose(bin_counts_aggregated, expected_bin_counts_aggregated, atol=1e-4, equal_nan=True)
-    assert torch.allclose(mean_gt_per_bin_aggregated, expected_mean_gt_per_bin, atol=1e-4, equal_nan=True)
-    
+    assert torch.allclose(
+        mean_p_per_bin_aggregated, expected_mean_p_per_bin, atol=1e-4, equal_nan=True
+    )
+    assert torch.allclose(
+        bin_counts_aggregated, expected_bin_counts_aggregated, atol=1e-4, equal_nan=True
+    )
+    assert torch.allclose(
+        mean_gt_per_bin_aggregated, expected_mean_gt_per_bin, atol=1e-4, equal_nan=True
+    )
+
 
 if __name__ == "__main__":
     pytest.main([__file__])

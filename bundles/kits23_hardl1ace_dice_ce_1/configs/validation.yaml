@@ -35,27 +35,27 @@ key_val_metric:
     _target_: MeanDice  # Could make this a combination of MeanDice - ACE
     include_background: false
     output_transform:
-      _target_: sacros.utils.discrete_from_engine
+      _target_: src.utils.discrete_from_engine
       keys: ['@pred', '@label']
       threshold: 0.5
 
 additional_val_metrics:
   val_ece:
-    _target_: sacros.handlers.CalibrationError
+    _target_: src.handlers.CalibrationError
     num_bins: 20
     include_background: False
     calibration_reduction: 'expected'
     metric_reduction: 'mean'
     output_transform: $monai.handlers.from_engine([@pred, @label])  # requires class probabilities for prediciton
   val_ace:
-    _target_: sacros.handlers.CalibrationError
+    _target_: src.handlers.CalibrationError
     num_bins: 20
     include_background: False
     calibration_reduction: 'average'
     metric_reduction: 'mean'
     output_transform: $monai.handlers.from_engine([@pred, @label])
   val_mce:
-    _target_: sacros.handlers.CalibrationError
+    _target_: src.handlers.CalibrationError
     num_bins: 20
     include_background: False
     calibration_reduction: 'maximum'
@@ -97,7 +97,7 @@ val_handlers:
   summary_writer: '@writer'
   batch_transform: $monai.handlers.from_engine(["image", "label"])
   output_transform:
-    _target_: sacros.utils.discrete_from_engine
+    _target_: src.utils.discrete_from_engine
     keys: ['@pred']
     threshold: 0.5
   max_channels: 4

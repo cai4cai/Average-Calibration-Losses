@@ -227,7 +227,6 @@ class SoftL1ACELoss(_Loss):
         self.register_buffer("class_weight", weight)
         self.class_weight: None | torch.Tensor
 
-
     def forward(self, input: torch.Tensor, target: torch.Tensor) -> torch.Tensor:
         """
         Args:
@@ -287,7 +286,7 @@ class SoftL1ACELoss(_Loss):
             right=self.right,
         )
         f = torch.nanmean(torch.abs(mean_p_per_bin - mean_gt_per_bin), dim=-1)
-        
+
         # Mask out empty classes if ignore_empty_classes is True
         if self.ignore_empty_classes:
             non_empty_mask = target.sum(dim=list(range(2, target.dim()))) > 0
@@ -297,7 +296,9 @@ class SoftL1ACELoss(_Loss):
         if self.class_weight is not None and num_of_classes != 1:
             # make sure the lengths of weights are equal to the number of classes
             if self.class_weight.ndim == 0:
-                self.class_weight = torch.as_tensor([self.class_weight] * num_of_classes)
+                self.class_weight = torch.as_tensor(
+                    [self.class_weight] * num_of_classes
+                )
             else:
                 if self.class_weight.shape[0] != num_of_classes:
                     raise ValueError(
@@ -306,7 +307,9 @@ class SoftL1ACELoss(_Loss):
                         the background category class 0."""
                     )
             if self.class_weight.min() < 0:
-                raise ValueError("the value/values of the `weight` should be no less than 0.")
+                raise ValueError(
+                    "the value/values of the `weight` should be no less than 0."
+                )
             # apply class_weight to loss
             f = f * self.class_weight.to(f)
 

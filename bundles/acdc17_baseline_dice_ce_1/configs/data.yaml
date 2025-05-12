@@ -21,8 +21,8 @@ resample_resolution: [1.0, 1.0, 5.0]
 
 class_names: ['background', 'right_ventricle', 'myocardium', 'left_ventricle']
 
-batch_name_transform: $sacros.utils.meta_data_batch_transform
-image_name_transform: $sacros.utils.meta_data_image_transform
+batch_name_transform: $src.utils.meta_data_batch_transform
+image_name_transform: $src.utils.meta_data_image_transform
 
 learning_rate: 0.0002
 

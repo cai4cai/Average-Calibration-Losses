@@ -1,7 +1,7 @@
 import pytest
 import unittest.mock as mock
 import torch
-from sacros.losses import (
+from src.losses import (
     CrossEntropyLoss,
     hard_binned_calibration,
     HardL1ACELoss,
@@ -125,8 +125,8 @@ def test_backward_pass(loss_fn, device):
     loss.backward()
 
     assert y_pred.grad is not None
-    
-    
+
+
 @pytest.mark.parametrize("loss_class", [HardL1ACELoss, SoftL1ACELoss])
 @pytest.mark.parametrize("ignore_empty_classes", [True, False])
 @pytest.mark.parametrize("device", DEVICES, ids=device_id)
@@ -134,7 +134,9 @@ def test_loss_ignore_empty_classes(loss_class, ignore_empty_classes, device):
     """
     Test HardL1ACELoss and SoftL1ACELoss for handling empty classes based on the ignore_empty_classes flag.
     """
-    loss_fn = loss_class(num_bins=5, reduction="mean", ignore_empty_classes=ignore_empty_classes).to(device)
+    loss_fn = loss_class(
+        num_bins=5, reduction="mean", ignore_empty_classes=ignore_empty_classes
+    ).to(device)
 
     # Predictions
     y_pred = torch.tensor(
@@ -143,7 +145,7 @@ def test_loss_ignore_empty_classes(loss_class, ignore_empty_classes, device):
         ],
         device=device,
     )
-    
+
     # Ground truth: second class is empty
     y_true = torch.tensor(
         [
@@ -156,12 +158,15 @@ def test_loss_ignore_empty_classes(loss_class, ignore_empty_classes, device):
 
     if ignore_empty_classes:
         # Loss for the second channel should be 0 when ignoring empty classes
-        assert loss.item() > 0, "Loss should ignore empty classes but be non-zero for populated classes."
+        assert (
+            loss.item() > 0
+        ), "Loss should ignore empty classes but be non-zero for populated classes."
     else:
         # Loss should account for all classes, including empty
-        assert loss.item() > 0, "Loss should include contributions from empty classes when flag is False."
+        assert (
+            loss.item() > 0
+        ), "Loss should include contributions from empty classes when flag is False."
 
-    
 
 @pytest.mark.parametrize("loss_class", [HardL1ACELoss, SoftL1ACELoss])
 @pytest.mark.parametrize("device", DEVICES, ids=device_id)
@@ -182,7 +187,7 @@ def test_loss_class_weighting(loss_class, device):
         ],
         device=device,
     )
-    
+
     # Ground truth tensor
     y_true = torch.tensor(
         [
@@ -199,14 +204,16 @@ def test_loss_class_weighting(loss_class, device):
     unweighted_loss = loss_fn_no_weight(y_pred, y_true)  # Shape: [Batch, Channels]
 
     # Manually compute the mean reduction (as reduction="mean" reduces over batch + spatial dims)
-    per_class_loss = torch.mean(unweighted_loss, dim=(0, 2, 3))  # Average over spatial dims
-    weighted_per_class_loss = per_class_loss * torch.tensor(class_weights, device=device)
+    per_class_loss = torch.mean(
+        unweighted_loss, dim=(0, 2, 3)
+    )  # Average over spatial dims
+    weighted_per_class_loss = per_class_loss * torch.tensor(
+        class_weights, device=device
+    )
     manual_weighted_loss = torch.mean(weighted_per_class_loss)
-    
+
     assert torch.isclose(
-        torch.tensor(weighted_loss),
-        manual_weighted_loss,
-        atol=1e-6
+        torch.tensor(weighted_loss), manual_weighted_loss, atol=1e-6
     ), f"Weighted loss {weighted_loss} did not match manually computed loss {manual_weighted_loss.item()}"
 
 

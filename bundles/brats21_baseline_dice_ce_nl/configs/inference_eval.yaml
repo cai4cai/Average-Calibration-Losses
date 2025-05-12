@@ -54,34 +54,34 @@ key_metric:
     _target_: MeanDice
     include_background: false
     output_transform:
-      _target_: sacros.utils.discrete_from_engine
+      _target_: src.utils.discrete_from_engine
       keys: ['@pred', '@label']
       threshold: 0.5
 
 metrics:
   # ece:  # Inference evaluation calibration metrics will be handled with CalibrationErrorHandler
-  #   _target_: sacros.handlers.CalibrationError
+  #   _target_: src.handlers.CalibrationError
   #   num_bins: '@num_bins'
   #   include_background: False
   #   calibration_reduction: 'expected'
   #   metric_reduction: 'mean'
   #   output_transform: $monai.handlers.from_engine([@pred, @label])  # requires class probabilities for prediciton
   # ace:
-  #   _target_: sacros.handlers.CalibrationError
+  #   _target_: src.handlers.CalibrationError
   #   num_bins: '@num_bins'
   #   include_background: False
   #   calibration_reduction: 'average'
   #   metric_reduction: 'mean'
   #   output_transform: $monai.handlers.from_engine([@pred, @label])
   # mce:
-  #   _target_: sacros.handlers.CalibrationError
+  #   _target_: src.handlers.CalibrationError
   #   num_bins: '@num_bins'
   #   include_background: False
   #   calibration_reduction: 'maximum'
   #   metric_reduction: 'mean'
   #   output_transform: $monai.handlers.from_engine([@pred, @label])
   reliability_diagram:
-    _target_: sacros.handlers.ReliabilityDiagramHandler
+    _target_: src.handlers.ReliabilityDiagramHandler
     num_classes: '@num_classes'
     num_bins: '@num_bins'
     include_background: False
@@ -137,7 +137,7 @@ handlers:
   metric_details: '$["mean_dice"]'
   batch_transform: '@batch_name_transform'
   summary_ops: '*'
-- _target_: sacros.handlers.CalibrationErrorHandler
+- _target_: src.handlers.CalibrationErrorHandler
   num_bins: '@num_bins'
   include_background: False
   output_dir: '@inference_dir'

@@ -17,8 +17,8 @@ resample_resolution: [1.0, 1.0, 1.0]
 class_names: $['background', 'kidney', 'tumour', 'cyst']  # Original classes
 # class_names: $['background', 'tumour', 'kidney_mass', 'kindey_and_masses']  # HEC classes
 
-batch_name_transform: $sacros.utils.meta_data_batch_transform_dir  # case name in is directory
-image_name_transform: $sacros.utils.meta_data_image_transform_dir
+batch_name_transform: $src.utils.meta_data_batch_transform_dir  # case name in is directory
+image_name_transform: $src.utils.meta_data_image_transform_dir
 
 ##########################
 # DATASET SETUP
@@ -127,9 +127,9 @@ val_transforms:
 # postprocessing:  # This results in the loss being calculated on the HEC classes
 #   _target_: Compose
 #   transforms:
-#   - _target_: sacros.transforms.ConvertToKits23Classesd  # labelmap to discrete "one-hot" kits classes
+#   - _target_: src.transforms.ConvertToKits23Classesd  # labelmap to discrete "one-hot" kits classes
 #     keys: '@label'
-#   - _target_: sacros.transforms.ConvertToKits23ClassesSoftmaxd  # softmax predicion to combined softmax kits classes
+#   - _target_: src.transforms.ConvertToKits23ClassesSoftmaxd  # softmax predicion to combined softmax kits classes
 #     keys: '@pred'
 
 # val_postprocessing:   # validation and inference with HEC classes
@@ -138,9 +138,9 @@ val_transforms:
 #   - _target_: Activationsd  # softmax prediction
 #     keys: '@pred'
 #     softmax: true
-#   - _target_: sacros.transforms.ConvertToKits23Classesd
+#   - _target_: src.transforms.ConvertToKits23Classesd
 #     keys: '@label'
-#   - _target_: sacros.transforms.ConvertToKits23ClassesSoftmaxd
+#   - _target_: src.transforms.ConvertToKits23ClassesSoftmaxd
 #     keys: '@pred'
 
 val_postprocessing:  # validation and inference without HEC classes

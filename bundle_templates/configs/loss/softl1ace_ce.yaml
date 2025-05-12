@@ -2,7 +2,7 @@
 # LOSS FUNCTION
 ##########################
 lossfn:
-  _target_: sacros.losses.SoftL1ACEandCELoss
+  _target_: src.losses.SoftL1ACEandCELoss
   ace_weight: 0.5
   ce_weight: 0.5
   to_onehot_y: true

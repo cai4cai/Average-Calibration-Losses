@@ -2,7 +2,7 @@
 # LOSS FUNCTION
 ##########################
 lossfn:
-  _target_: sacros.losses.SoftL1ACEandDiceCELoss
+  _target_: src.losses.SoftL1ACEandDiceCELoss
   ace_weight: 0.33
   dice_weight: 0.33
   ce_weight: 0.33
