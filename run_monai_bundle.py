@@ -28,7 +28,7 @@ def get_parser():
         help="Seed for deterministic training.",
     )
     parser.add_argument(
-        "--debug", action="store_true", help="Enable debug mode for low resources."
+        "--debug", action="store_true", help="Enable debug mode to test train and val."
     )
     return parser
 
