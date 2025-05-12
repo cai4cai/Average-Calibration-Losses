@@ -1,58 +1,37 @@
-# syntax=docker/dockerfile:1
+FROM nvidia/cuda:12.4.0-runtime-ubuntu22.04
 
-# Stage 1: NVIDIA CUDA Image
-ARG CUDA_VERSION=12.5.0
-FROM nvidia/cuda:${CUDA_VERSION}-runtime-ubuntu22.04 AS cuda-base
-
-# Avoid warnings by switching to noninteractive
 ENV DEBIAN_FRONTEND=noninteractive
 
-# Update and install necessary packages
-RUN apt-get update && apt-get upgrade -y && apt-get install -y \
-    git wget
+# Install system dependencies and Python 3.11
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+        software-properties-common curl sudo \
+        git && \
+    add-apt-repository -y ppa:deadsnakes/ppa && \
+    apt-get update && \
+    apt-get install -y --no-install-recommends \
+        python3.11 python3.11-venv python3.11-dev python3-pip && \
+    ln -sf /usr/bin/python3.11 /usr/bin/python3 && \
+    ln -sf /usr/bin/python3.11 /usr/bin/python && \
+    python3.11 -m pip install --upgrade pip && \
+    rm -rf /var/lib/apt/lists/*
 
-# Create a non-root user with the same UID/GID as the host user
-ARG USER_ID
-ARG GROUP_ID
-ARG USER
-RUN addgroup --gid ${GROUP_ID} ${USER}
-RUN adduser --disabled-password --gecos '' --uid $USER_ID --gid $GROUP_ID $USER
-RUN usermod -d /home/${USER} ${USER}
-USER ${USER}
-WORKDIR /home/${USER}
+# CUDA environment variables
+ENV CUDA_HOME=/usr/local/cuda
+ENV PATH=${CUDA_HOME}/bin:$PATH
+ENV LD_LIBRARY_PATH=${CUDA_HOME}/lib64:$LD_LIBRARY_PATH
 
-# Install Miniconda as the non-root user
-RUN wget --quiet \
-    https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh \
-    && bash Miniconda3-latest-Linux-x86_64.sh -b -p /home/${USER}/miniconda3 \
-    && rm -f Miniconda3-latest-Linux-x86_64.sh
+# Install Python dependencies
+COPY environment.yml /tmp/environment.yml
+RUN pip install --no-cache-dir -r /tmp/environment.yml
 
-# Add Miniconda to PATH
-ENV PATH="/home/${USER}/miniconda3/bin:${PATH}"
+# Create non-root user
+ARG USERNAME=vscode
+ARG USER_UID=1000
+ARG USER_GID=$USER_UID
+RUN groupadd --gid $USER_GID $USERNAME && \
+    useradd --uid $USER_UID --gid $USER_GID -m $USERNAME -s /bin/bash && \
+    echo "$USERNAME ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/$USERNAME && \
+    chmod 0440 /etc/sudoers.d/$USERNAME
 
-# Arguments for Python, PyTorch, CUDA Toolkit versions
-ARG PYTORCH_VERSION=2.5.0
-ARG CUDATOOLKIT_VERSION=12.4
-ARG PYTHON_VERSION=3.11
-
-# Dependencies
-RUN conda clean --all
-RUN . /home/${USER}/miniconda3/etc/profile.d/conda.sh \
-    && conda update conda \
-    && conda install python=${PYTHON_VERSION} \
-    && conda install pytorch=${PYTORCH_VERSION} pytorch-cuda=${CUDATOOLKIT_VERSION} -c pytorch -c nvidia
-RUN echo new_change
-COPY --chown=${USER}:${USER} ./environment.yaml /home/${USER}/
-RUN conda env update -n base --file /home/${USER}/environment.yaml
-
-# Append Miniconda to PATH in .bashrc for interactive shells
-RUN echo "export PATH=/home/${USER}/miniconda3/bin:$PATH" >> /home/${USER}/.bashrc
-
-# Clear apt install cache and switch back to dialog for any ad-hoc use of apt-get
-USER root
-RUN rm -rf /var/lib/apt/lists/* && apt-get clean
-ENV DEBIAN_FRONTEND=dialog
-USER ${USER}
-
-# The CMD command can be used to run a specific command within the container
 CMD ["bash"]

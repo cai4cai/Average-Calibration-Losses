@@ -1,0 +1,17 @@
+torch==2.5.0
+numpy<2.0
+notebook
+ipywidgets
+monai
+pytorch-ignite
+nibabel
+scikit-image
+tensorboardx
+pytest
+matplotlib
+seaborn
+tabulate
+pre-commit==3.6.0
+black==24.1.1
+flake8==7.0.0
+fire
