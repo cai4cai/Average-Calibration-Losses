@@ -8,7 +8,7 @@
         "--gpus",
         "all",
         "--shm-size",
-        "16g",
+        "32g",
         "--volume",
         "${localWorkspaceFolder}/../data:/workspaces/data"
     ],
