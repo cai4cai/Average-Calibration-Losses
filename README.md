@@ -217,6 +217,8 @@ This project used the following datasets.
   - *Modality*: MRI
   - *Size*: See BraTS 2021 challenge
   - *Config*: [`bundle_templates/configs/data/brats21.yaml`](bundle_templates/configs/data/brats21.yaml)
+  - For this dataset the training dataset available from BraTS was split into training and testing
+  - The splits are found in ./brats21_train_val.txt and ./brats21_test.txt
 
 ---
 
@@ -247,11 +249,11 @@ For development, a `.devcontainer` setup is provided for use with Visual Studio 
 **Pretrained model weights are not included in this repository due to size constraints.**
 A download link will be provided here in the future.
 
----
+<!-- ---
 
 ## Dataset Download
 
-*Instructions for downloading and preparing the datasets will be added here.*
+*Instructions for downloading and preparing the datasets will be added here.* -->
 
 ---
 
