@@ -1,0 +1,5 @@
+2025-09-30 13:36:47,527 ignite.engine.engine.SupervisedEvaluator INFO: Restored all variables from bundles/acdc17_baseline_ce_1/seed_12345/model_key_metric=0.8880.pt
+2025-09-30 13:37:58,319 ignite.engine.engine.SupervisedEvaluator ERROR: Engine run is terminating due to exception:
+2025-09-30 13:41:22,885 ignite.engine.engine.SupervisedEvaluator INFO: Restored all variables from bundles/acdc17_baseline_ce_1/seed_12345/model_key_metric=0.8880.pt
+2025-09-30 13:43:02,833 ignite.engine.engine.SupervisedEvaluator INFO: Got new best metric of mean_dice: 0.8673574924468994
+2025-09-30 13:43:02,847 ignite.engine.engine.SupervisedEvaluator INFO: Epoch[1] Complete. Time taken: 00:01:39.886

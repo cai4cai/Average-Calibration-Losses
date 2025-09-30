@@ -60,7 +60,7 @@ echo "PROJECT_DIR: $PROJECT_DIR"
 echo "DATA_DIR: $DATA_DIR"
 
 # Run the Docker container with the configured arguments
-docker run -d --rm \
+docker run --rm \
     --gpus '"device='$GPU'"' \
     --cpuset-cpus=$CPUS \
     --shm-size=$SHM_SIZE \

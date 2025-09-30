@@ -1,0 +1,26 @@
+##########################
+# LOSS FUNCTION
+##########################
+lossfn:
+  _target_: src.losses.CrossEntropyLoss
+  to_onehot_y: true
+  ce_params:
+    reduction: 'mean'
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
