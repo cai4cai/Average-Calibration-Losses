@@ -4,6 +4,7 @@ from . import brats_transforms
 from . import losses
 from . import visualize
 from . import transforms
+from . import utils
 
 __all__ = [
     "handlers",
@@ -12,4 +13,5 @@ __all__ = [
     "losses",
     "visualize",
     "transforms",
+    "utils",
 ]

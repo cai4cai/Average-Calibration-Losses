@@ -1,0 +1,9 @@
+2025-11-26 15:00:17,105 ignite.engine.engine.SupervisedEvaluator INFO: Restored all variables from bundles/acdc17_baseline_dice_ce_2/seed_12345_temp_scaled/model_final_iteration=10.pt
+2025-11-26 15:00:44,183 ignite.engine.engine.SupervisedEvaluator INFO: Got new best metric of mean_dice: 0.9023450613021851
+2025-11-26 15:00:44,191 ignite.engine.engine.SupervisedEvaluator INFO: Epoch[1] Complete. Time taken: 00:00:27.018
+2025-11-26 15:11:34,610 ignite.engine.engine.SupervisedEvaluator INFO: Restored all variables from bundles/acdc17_baseline_dice_ce_2/seed_12345_temp_scaled/model_final_iteration=10.pt
+2025-11-26 15:12:01,403 ignite.engine.engine.SupervisedEvaluator INFO: Got new best metric of mean_dice: 0.9023450613021851
+2025-11-26 15:12:01,411 ignite.engine.engine.SupervisedEvaluator INFO: Epoch[1] Complete. Time taken: 00:00:26.736
+2025-11-26 15:17:49,276 ignite.engine.engine.SupervisedEvaluator INFO: Restored all variables from bundles/acdc17_baseline_dice_ce_2/seed_12345_temp_scaled/model_final_iteration=10.pt
+2025-11-26 15:18:16,476 ignite.engine.engine.SupervisedEvaluator INFO: Got new best metric of mean_dice: 0.9023450613021851
+2025-11-26 15:18:16,522 ignite.engine.engine.SupervisedEvaluator INFO: Epoch[1] Complete. Time taken: 00:00:27.182

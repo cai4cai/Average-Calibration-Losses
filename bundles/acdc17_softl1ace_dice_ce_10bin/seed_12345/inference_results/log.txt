@@ -1,8 +1,0 @@
-2025-09-30 13:37:16,201 ignite.engine.engine.SupervisedEvaluator INFO: Restored all variables from bundles/acdc17_softl1ace_dice_ce_10bin/seed_12345/model_key_metric=0.8839.pt
-2025-09-30 13:37:16,821 ignite.engine.engine.SupervisedEvaluator ERROR: Current run is terminating due to exception: patch size (256, 256, 16), mode=gaussian, sigma_scale=0.125, device=cuda:0
-Seems to be OOM. Please try smaller patch size or mode='constant' instead of mode='gaussian'.
-2025-09-30 13:37:17,045 ignite.engine.engine.SupervisedEvaluator ERROR: Engine run is terminating due to exception: patch size (256, 256, 16), mode=gaussian, sigma_scale=0.125, device=cuda:0
-Seems to be OOM. Please try smaller patch size or mode='constant' instead of mode='gaussian'.
-2025-09-30 13:45:00,479 ignite.engine.engine.SupervisedEvaluator INFO: Restored all variables from bundles/acdc17_softl1ace_dice_ce_10bin/seed_12345/model_key_metric=0.8839.pt
-2025-09-30 13:46:42,424 ignite.engine.engine.SupervisedEvaluator INFO: Got new best metric of mean_dice: 0.8678953647613525
-2025-09-30 13:46:42,435 ignite.engine.engine.SupervisedEvaluator INFO: Epoch[1] Complete. Time taken: 00:01:41.882

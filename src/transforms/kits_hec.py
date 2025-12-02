@@ -18,6 +18,7 @@ class ConvertToKits23Classesd(MapTransform):
     3: Cyst
 
     OUT ONEHOT (As required for eval):
+    0: Background (BG)
     1: Tumor = Tumor (2)
     2: Kidney Mass = Tumor (2) + Cyst (3)
     3: Kidney and Masses = Kidney (1) + Tumor (2) + Cyst (3)

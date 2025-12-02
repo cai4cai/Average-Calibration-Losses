@@ -1,0 +1,97 @@
+# Temperature Scaled Model Evaluation Configuration
+# This config evaluates the temperature-scaled model on the test set
+
+##########################
+# PATH DEFINITIONS
+##########################
+
+# Use the temperature scaled model checkpoint
+temp_scaled_output_dir: $@output_dir + '_temp_scaled'
+inference_dir: '$os.path.join(@temp_scaled_output_dir, "inference_results")'
+
+# Load the final temperature scaled model
+ckpt_path: '$os.path.join(@temp_scaled_output_dir, "model_final_iteration=53.pt")'
+
+##########################
+# TEMPERATURE SCALED MODEL
+##########################
+# Load the complete TemperatureScaling model from checkpoint
+model:
+  _target_: src.utils.TemperatureScaling
+  network: '@network'
+  # Don't load network_ckpt_path since we'll load the full model via CheckpointLoader
+
+##########################
+# OVERRIDE METRICS TO SAVE IN TEMP SCALED DIRECTORY
+##########################
+temp_scaled_metrics:
+  reliability_diagram:
+    _target_: src.handlers.ReliabilityDiagramHandler
+    num_classes: '@num_classes'
+    num_bins: '@num_bins'
+    include_background: False
+    output_dir: '$os.path.join(@inference_dir, "reliability_diagrams")'
+    figsize: [4.8, 3.6]
+    class_names: '@class_names'
+    draw_case_diagrams: False
+    draw_case_histograms: False
+    case_name_transform: '@image_name_transform'
+    print_case_ece: True
+    print_case_ace: True
+    print_case_mce: True
+    draw_dataset_diagrams: True
+    draw_dataset_histograms: True
+    draw_dataset_average_over_classes: True
+    dataset_imshow_kwargs:
+      cmap: 'YlOrRd'
+      norm: $matplotlib.colors.PowerNorm(gamma=0.35)
+    savefig_kwargs:
+      format: 'pdf'
+      dpi: 100
+      transparent: False
+      bbox_inches: 'tight'
+    output_transform: $monai.handlers.from_engine([@pred, @label])
+    save_details: False
+
+##########################
+# OVERRIDE HANDLERS TO SAVE IN TEMP SCALED DIRECTORY
+##########################
+temp_scaled_handlers:
+- _target_: LogfileHandler
+  output_dir: '@inference_dir'
+- _target_: CheckpointLoader
+  load_path: '@ckpt_path'
+  load_dict:
+    model: '@model'  # Load the complete TemperatureScaling model
+- _target_: MetricsSaver
+  save_dir: '@inference_dir'
+  metrics: '$["mean_dice"]'
+  metric_details: '$["mean_dice"]'
+  batch_transform: '@batch_name_transform'
+  summary_ops: '*'
+- _target_: src.handlers.CalibrationErrorHandler
+  num_bins: '@num_bins'
+  include_background: False
+  output_dir: '@inference_dir'
+  summary_ops: '*'
+  meta_batch_transform: '@batch_name_transform'
+
+##########################
+# INFERENCE EVALUATOR (override to use temp scaled model and paths)
+##########################
+evaluator:
+  _target_: SupervisedEvaluator
+  device: '@device'
+  val_data_loader: '@testing_dataloader'
+  network: '@model'  # Use temperature scaled model instead of base network
+  inferer: '@inferer'
+  postprocessing: '@val_postprocessing'
+  key_val_metric: '@key_metric'
+  # additional_metrics: '@temp_scaled_metrics'
+  val_handlers: '@temp_scaled_handlers'
+
+##########################
+# RUN INFERENCE
+##########################
+run:
+- $@evaluator.run()

@@ -1,0 +1,119 @@
+# Temperature Scaled Model Evaluation with Additional Metrics
+# This config evaluates the temperature-scaled model on additional calibration metrics
+
+test_num_workers: 4
+
+##########################
+# PATH DEFINITIONS
+##########################
+
+# Use the temperature scaled model checkpoint
+temp_scaled_output_dir: $@output_dir + '_temp_scaled'
+inference_dir: '$os.path.join(@temp_scaled_output_dir, "inference_results_additional")'
+
+# Load the final temperature scaled model
+ckpt_path: '$os.path.join(@temp_scaled_output_dir, "model_final_iteration=10.pt")'
+
+##########################
+# TESTING DATASET
+##########################
+
+testing_dataset:
+  _target_: Dataset
+  data: '@test_sub'
+  transform: '@val_transforms'
+
+testing_dataloader:
+  _target_: DataLoader
+  dataset: '@testing_dataset'
+  batch_size: 1
+  num_workers: '@test_num_workers'
+
+##########################
+# TEMPERATURE SCALED MODEL
+##########################
+# Load the complete TemperatureScaling model from checkpoint
+model:
+  _target_: src.utils.TemperatureScaling
+  network: '@network'
+  # Don't load network_ckpt_path since we'll load the full model via CheckpointLoader
+
+#########################
+# INFERENCE METRICS
+##########################
+
+key_metric:
+  mean_dice:
+    _target_: MeanDice
+    output_transform:
+      _target_: src.utils.discrete_from_engine
+      keys: ['@pred', '@label']
+      threshold: 0.5
+
+metrics:
+  brier_score:
+    _target_: src.handlers.BrierScoreHandler
+    is_multilabel: false
+    metric_reduction: 'mean'
+    output_transform: $monai.handlers.from_engine([@pred, @label])
+  categorical_nll:
+    _target_: src.handlers.CategoricalNLLHandler
+    is_multilabel: false
+    metric_reduction: 'mean'
+    output_transform: $monai.handlers.from_engine([@pred, @label])
+  aurc:
+    _target_: src.handlers.AURCHandler
+    is_multilabel: false
+    metric_reduction: 'mean'
+    output_transform: $monai.handlers.from_engine([@pred, @label])
+
+
+##########################
+# INFERENCE HANDLERS
+##########################
+handlers:
+- _target_: LogfileHandler  # log outputs from the validation engine
+  output_dir: '@inference_dir'
+- _target_: CheckpointLoader
+  load_path: '@ckpt_path'
+  load_dict:
+    model: '@model'  # Load the complete TemperatureScaling model
+- _target_: MetricsSaver
+  save_dir: '@inference_dir'
+  metrics: '*'
+  metric_details: '*'
+  batch_transform: '@batch_name_transform'
+  summary_ops: '*'
+
+
+##########################
+# INFERENCE EVALUATOR
+##########################
+
+inferer:
+  _target_: SlidingWindowInferer
+  roi_size: '@val_windows_size'
+  sw_batch_size: 1
+  mode: 'gaussian'
+
+evaluator:
+  _target_: SupervisedEvaluator
+  device: '@device'
+  val_data_loader: '@testing_dataloader'
+  network: '@model'  # Use temperature scaled model instead of base network
+  inferer: '@inferer'
+  postprocessing: '@val_postprocessing'
+  key_val_metric: '@key_metric'
+  additional_metrics: '@metrics'
+  val_handlers: '@handlers'
+
+metriclogger:
+  _target_: MetricLogger
+  evaluator: '@evaluator'
+
+
+##########################
+# RUN INFERENCE
+##########################
+run:
+- $@evaluator.run()

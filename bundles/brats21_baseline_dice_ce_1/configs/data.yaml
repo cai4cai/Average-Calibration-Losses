@@ -129,24 +129,24 @@ val_transforms:
 #   - _target_: src.brats_transforms.ConvertToBratsClassesSoftmaxd  # softmax predicion to combined softmax brats classes
 #     keys: '@pred'
 
-# val_postprocessing:  # validation and inference with HEC classes
-#   _target_: Compose
-#   transforms:
-#   - _target_: Activationsd  # softmax prediction
-#     keys: '@pred'
-#     softmax: true
-#   - _target_: src.brats_transforms.ConvertToBratsClassesd  # labelmap to discrete "one-hot" brats classes
-#     keys: '@label'
-#   - _target_: src.brats_transforms.ConvertToBratsClassesSoftmaxd  # softmax predicion to combined softmax brats classes
-#     keys: '@pred'
-
-
-val_postprocessing:  # validation and inference without HEC classes
+val_postprocessing:  # validation and inference with HEC classes
   _target_: Compose
   transforms:
-  - _target_: Activationsd
+  - _target_: Activationsd  # softmax prediction
     keys: '@pred'
     softmax: true
-  - _target_: AsDiscreted
+  - _target_: src.brats_transforms.ConvertToBratsClassesd  # labelmap to discrete "one-hot" brats classes
     keys: '@label'
-    to_onehot: '@num_classes'
+  - _target_: src.brats_transforms.ConvertToBratsClassesSoftmaxd  # softmax predicion to combined softmax brats classes
+    keys: '@pred'
+
+
+# val_postprocessing:  # validation and inference without HEC classes
+#   _target_: Compose
+#   transforms:
+#   - _target_: Activationsd
+#     keys: '@pred'
+#     softmax: true
+#   - _target_: AsDiscreted
+#     keys: '@label'
+#     to_onehot: '@num_classes'

@@ -3,17 +3,17 @@ test_num_workers: 4
 ##########################
 # PATH DEFINITIONS
 ##########################
-# inference_dir: '$os.path.join(@output_dir, "inference_results")'
-# # Get checkpoint with highest validation metric:
-# ckpt_path: '$max(glob.glob(os.path.join(@output_dir, "model_key_metric=*.pt")), key=lambda f: float(os.path.basename(f).split("=")[1].rstrip(".pt")), default="none")'
+inference_dir: '$os.path.join(@output_dir, "inference_results")'
+# Get checkpoint with highest validation metric:
+ckpt_path: '$max(glob.glob(os.path.join(@output_dir, "model_key_metric=*.pt")), key=lambda f: float(os.path.basename(f).split("=")[1].rstrip(".pt")), default="none")'
 
 # inference_dir: '$os.path.join(@output_dir, "inference_results_final_epoch")'
 # # Get checkpoint for the final epoch:
 # ckpt_path: '$os.path.join(@output_dir, "model_final_iteration=20.pt")'
 
-inference_dir: '$os.path.join(@output_dir, "inference_results_complete_cases_only")'
-# Get checkpoint with highest validation metric:
-ckpt_path: '$max(glob.glob(os.path.join(@output_dir, "model_key_metric=*.pt")), key=lambda f: float(os.path.basename(f).split("=")[1].rstrip(".pt")), default="none")'
+# inference_dir: '$os.path.join(@output_dir, "inference_results_complete_cases_only")'
+# # Get checkpoint with highest validation metric:
+# ckpt_path: '$max(glob.glob(os.path.join(@output_dir, "model_key_metric=*.pt")), key=lambda f: float(os.path.basename(f).split("=")[1].rstrip(".pt")), default="none")'
 
 ##########################
 # TESTING DATASET

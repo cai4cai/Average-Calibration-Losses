@@ -21,8 +21,8 @@ learning_rate: 0.0002
 ##########################
 # DATASET SETUP
 ##########################
-# dataset_dir: '../data/amos22'
-dataset_dir: '../data/amos22_complete'  # using this to perform analysis on subset of dataset with no missing GT classses
+dataset_dir: '../data/amos22'
+# dataset_dir: '../data/amos22_complete'  # using this to perform analysis on subset of dataset with no missing GT classses
 
 # Filter out MRI data by checking if the id number is less than 500
 train_cases: '$sorted([case for case in glob.glob(os.path.join(@dataset_dir, "imagesTr", "amos_*.nii.gz")) if int(os.path.basename(case).split("_")[1].split(".")[0]) < 500])'

@@ -1,0 +1,3 @@
+2025-11-15 16:09:33,747 ignite.engine.engine.SupervisedEvaluator INFO: Restored all variables from bundles/acdc17_hardl1ace_dice_ce_2_ace_0_50/seed_12345/model_key_metric=0.8919.pt
+2025-11-15 16:10:33,716 ignite.engine.engine.SupervisedEvaluator INFO: Got new best metric of mean_dice: 0.8695593476295471
+2025-11-15 16:10:33,727 ignite.engine.engine.SupervisedEvaluator INFO: Epoch[1] Complete. Time taken: 00:00:59.856

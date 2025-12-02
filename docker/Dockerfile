@@ -22,12 +22,15 @@ RUN pip3 install --no-cache-dir -r /tmp/requirements.txt
 RUN ln -s /usr/bin/python3 /usr/local/bin/python
 
 # Create non-root user
-ARG USER
-ARG USER_ID
-ARG GROUP_ID
-RUN groupadd --gid $GROUP_ID $USER && \
-    useradd --uid $USER_ID --gid $GROUP_ID -m $USER -s /bin/bash && \
-    echo "$USER ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/$USER && \
-    chmod 0440 /etc/sudoers.d/$USER
+ARG USERNAME=thb20
+ARG USER_UID=9959
+ARG USER_GID=2008
+RUN groupadd --gid $USER_GID $USERNAME || true && \
+    useradd --uid $USER_UID --gid $USER_GID -m $USERNAME -s /bin/bash && \
+    echo "$USERNAME ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/$USERNAME && \
+    chmod 0440 /etc/sudoers.d/$USERNAME
+
+# Switch to non-root user
+USER $USERNAME
 
 CMD ["bash"]

@@ -1,0 +1,12 @@
+numpy
+monai
+pytorch-ignite
+nibabel
+scikit-image
+tensorboardX
+matplotlib
+seaborn
+tabulate
+fire
+tqdm
+PyYAML

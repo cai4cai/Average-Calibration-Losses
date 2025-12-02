@@ -1,0 +1,303 @@
+2025-11-12 16:02:36,749 ignite.engine.engine.SupervisedTrainer ERROR: Current run is terminating due to exception: CUDA out of memory. Tried to allocate 882.00 MiB. GPU 0 has a total capacity of 23.51 GiB of which 616.75 MiB is free. Including non-PyTorch memory, this process has 22.89 GiB memory in use. Of the allocated memory 22.41 GiB is allocated by PyTorch, and 42.21 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)
+2025-11-12 16:02:36,749 ignite.engine.engine.SupervisedTrainer ERROR: Exception: CUDA out of memory. Tried to allocate 882.00 MiB. GPU 0 has a total capacity of 23.51 GiB of which 616.75 MiB is free. Including non-PyTorch memory, this process has 22.89 GiB memory in use. Of the allocated memory 22.41 GiB is allocated by PyTorch, and 42.21 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.10/dist-packages/ignite/engine/engine.py", line 1110, in _run_once_on_dataset_as_gen
+    self.state.output = self._process_function(self, self.state.batch)
+  File "/usr/local/lib/python3.10/dist-packages/monai/engines/trainer.py", line 264, in _iteration
+    _compute_pred_loss()
+  File "/usr/local/lib/python3.10/dist-packages/monai/engines/trainer.py", line 248, in _compute_pred_loss
+    engine.state.output[Keys.PRED] = engine.inferer(inputs, engine.network, *args, **kwargs)
+  File "/usr/local/lib/python3.10/dist-packages/monai/inferers/inferer.py", line 396, in __call__
+    return network(inputs, *args, **kwargs)
+  File "/usr/local/lib/python3.10/dist-packages/torch/nn/modules/module.py", line 1736, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/usr/local/lib/python3.10/dist-packages/torch/nn/modules/module.py", line 1747, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/workspaces/Average-Calibration-Losses/src/utils.py", line 217, in forward
+    logits = self.network(input)
+  File "/usr/local/lib/python3.10/dist-packages/torch/nn/modules/module.py", line 1736, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/usr/local/lib/python3.10/dist-packages/torch/nn/modules/module.py", line 1747, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/usr/local/lib/python3.10/dist-packages/monai/networks/nets/segresnet_ds.py", line 428, in forward
+    return self._forward(x)
+  File "/usr/local/lib/python3.10/dist-packages/monai/networks/nets/segresnet_ds.py", line 398, in _forward
+    x_down = self.encoder(x)
+  File "/usr/local/lib/python3.10/dist-packages/torch/nn/modules/module.py", line 1736, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/usr/local/lib/python3.10/dist-packages/torch/nn/modules/module.py", line 1747, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/usr/local/lib/python3.10/dist-packages/monai/networks/nets/segresnet_ds.py", line 232, in forward
+    return self._forward(x)
+  File "/usr/local/lib/python3.10/dist-packages/monai/networks/nets/segresnet_ds.py", line 222, in _forward
+    x = level["blocks"](x)
+  File "/usr/local/lib/python3.10/dist-packages/torch/nn/modules/module.py", line 1736, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/usr/local/lib/python3.10/dist-packages/torch/nn/modules/module.py", line 1747, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/usr/local/lib/python3.10/dist-packages/torch/nn/modules/container.py", line 250, in forward
+    input = module(input)
+  File "/usr/local/lib/python3.10/dist-packages/torch/nn/modules/module.py", line 1736, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/usr/local/lib/python3.10/dist-packages/torch/nn/modules/module.py", line 1747, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/usr/local/lib/python3.10/dist-packages/monai/networks/nets/segresnet_ds.py", line 123, in forward
+    x = self.conv2(self.act2(self.norm2(self.conv1(self.act1(self.norm1(x))))))
+  File "/usr/local/lib/python3.10/dist-packages/torch/nn/modules/module.py", line 1736, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/usr/local/lib/python3.10/dist-packages/torch/nn/modules/module.py", line 1747, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/usr/local/lib/python3.10/dist-packages/torch/nn/modules/instancenorm.py", line 124, in forward
+    return self._apply_instance_norm(input)
+  File "/usr/local/lib/python3.10/dist-packages/torch/nn/modules/instancenorm.py", line 47, in _apply_instance_norm
+    return F.instance_norm(
+  File "/usr/local/lib/python3.10/dist-packages/torch/nn/functional.py", line 2852, in instance_norm
+    return handle_torch_function(
+  File "/usr/local/lib/python3.10/dist-packages/torch/overrides.py", line 1739, in handle_torch_function
+    result = torch_func_method(public_api, types, args, kwargs)
+  File "/usr/local/lib/python3.10/dist-packages/monai/data/meta_tensor.py", line 282, in __torch_function__
+    ret = super().__torch_function__(func, types, args, kwargs)
+  File "/usr/local/lib/python3.10/dist-packages/torch/_tensor.py", line 1512, in __torch_function__
+    ret = func(*args, **kwargs)
+  File "/usr/local/lib/python3.10/dist-packages/torch/nn/functional.py", line 2866, in instance_norm
+    return torch.instance_norm(
+torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 882.00 MiB. GPU 0 has a total capacity of 23.51 GiB of which 616.75 MiB is free. Including non-PyTorch memory, this process has 22.89 GiB memory in use. Of the allocated memory 22.41 GiB is allocated by PyTorch, and 42.21 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)
+2025-11-12 16:02:36,751 ignite.engine.engine.SupervisedTrainer ERROR: Engine run is terminating due to exception: CUDA out of memory. Tried to allocate 882.00 MiB. GPU 0 has a total capacity of 23.51 GiB of which 616.75 MiB is free. Including non-PyTorch memory, this process has 22.89 GiB memory in use. Of the allocated memory 22.41 GiB is allocated by PyTorch, and 42.21 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)
+2025-11-12 16:02:36,751 ignite.engine.engine.SupervisedTrainer ERROR: Exception: CUDA out of memory. Tried to allocate 882.00 MiB. GPU 0 has a total capacity of 23.51 GiB of which 616.75 MiB is free. Including non-PyTorch memory, this process has 22.89 GiB memory in use. Of the allocated memory 22.41 GiB is allocated by PyTorch, and 42.21 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.10/dist-packages/ignite/engine/engine.py", line 972, in _internal_run_as_gen
+    epoch_time_taken += yield from self._run_once_on_dataset_as_gen()
+  File "/usr/local/lib/python3.10/dist-packages/ignite/engine/engine.py", line 1128, in _run_once_on_dataset_as_gen
+    self._handle_exception(e)
+  File "/usr/local/lib/python3.10/dist-packages/ignite/engine/engine.py", line 658, in _handle_exception
+    self._fire_event(Events.EXCEPTION_RAISED, e)
+  File "/usr/local/lib/python3.10/dist-packages/ignite/engine/engine.py", line 435, in _fire_event
+    func(*first, *(event_args + others), **kwargs)
+  File "/usr/local/lib/python3.10/dist-packages/monai/handlers/stats_handler.py", line 201, in exception_raised
+    raise e
+  File "/usr/local/lib/python3.10/dist-packages/ignite/engine/engine.py", line 1110, in _run_once_on_dataset_as_gen
+    self.state.output = self._process_function(self, self.state.batch)
+  File "/usr/local/lib/python3.10/dist-packages/monai/engines/trainer.py", line 264, in _iteration
+    _compute_pred_loss()
+  File "/usr/local/lib/python3.10/dist-packages/monai/engines/trainer.py", line 248, in _compute_pred_loss
+    engine.state.output[Keys.PRED] = engine.inferer(inputs, engine.network, *args, **kwargs)
+  File "/usr/local/lib/python3.10/dist-packages/monai/inferers/inferer.py", line 396, in __call__
+    return network(inputs, *args, **kwargs)
+  File "/usr/local/lib/python3.10/dist-packages/torch/nn/modules/module.py", line 1736, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/usr/local/lib/python3.10/dist-packages/torch/nn/modules/module.py", line 1747, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/workspaces/Average-Calibration-Losses/src/utils.py", line 217, in forward
+    logits = self.network(input)
+  File "/usr/local/lib/python3.10/dist-packages/torch/nn/modules/module.py", line 1736, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/usr/local/lib/python3.10/dist-packages/torch/nn/modules/module.py", line 1747, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/usr/local/lib/python3.10/dist-packages/monai/networks/nets/segresnet_ds.py", line 428, in forward
+    return self._forward(x)
+  File "/usr/local/lib/python3.10/dist-packages/monai/networks/nets/segresnet_ds.py", line 398, in _forward
+    x_down = self.encoder(x)
+  File "/usr/local/lib/python3.10/dist-packages/torch/nn/modules/module.py", line 1736, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/usr/local/lib/python3.10/dist-packages/torch/nn/modules/module.py", line 1747, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/usr/local/lib/python3.10/dist-packages/monai/networks/nets/segresnet_ds.py", line 232, in forward
+    return self._forward(x)
+  File "/usr/local/lib/python3.10/dist-packages/monai/networks/nets/segresnet_ds.py", line 222, in _forward
+    x = level["blocks"](x)
+  File "/usr/local/lib/python3.10/dist-packages/torch/nn/modules/module.py", line 1736, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/usr/local/lib/python3.10/dist-packages/torch/nn/modules/module.py", line 1747, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/usr/local/lib/python3.10/dist-packages/torch/nn/modules/container.py", line 250, in forward
+    input = module(input)
+  File "/usr/local/lib/python3.10/dist-packages/torch/nn/modules/module.py", line 1736, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/usr/local/lib/python3.10/dist-packages/torch/nn/modules/module.py", line 1747, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/usr/local/lib/python3.10/dist-packages/monai/networks/nets/segresnet_ds.py", line 123, in forward
+    x = self.conv2(self.act2(self.norm2(self.conv1(self.act1(self.norm1(x))))))
+  File "/usr/local/lib/python3.10/dist-packages/torch/nn/modules/module.py", line 1736, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/usr/local/lib/python3.10/dist-packages/torch/nn/modules/module.py", line 1747, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/usr/local/lib/python3.10/dist-packages/torch/nn/modules/instancenorm.py", line 124, in forward
+    return self._apply_instance_norm(input)
+  File "/usr/local/lib/python3.10/dist-packages/torch/nn/modules/instancenorm.py", line 47, in _apply_instance_norm
+    return F.instance_norm(
+  File "/usr/local/lib/python3.10/dist-packages/torch/nn/functional.py", line 2852, in instance_norm
+    return handle_torch_function(
+  File "/usr/local/lib/python3.10/dist-packages/torch/overrides.py", line 1739, in handle_torch_function
+    result = torch_func_method(public_api, types, args, kwargs)
+  File "/usr/local/lib/python3.10/dist-packages/monai/data/meta_tensor.py", line 282, in __torch_function__
+    ret = super().__torch_function__(func, types, args, kwargs)
+  File "/usr/local/lib/python3.10/dist-packages/torch/_tensor.py", line 1512, in __torch_function__
+    ret = func(*args, **kwargs)
+  File "/usr/local/lib/python3.10/dist-packages/torch/nn/functional.py", line 2866, in instance_norm
+    return torch.instance_norm(
+torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 882.00 MiB. GPU 0 has a total capacity of 23.51 GiB of which 616.75 MiB is free. Including non-PyTorch memory, this process has 22.89 GiB memory in use. Of the allocated memory 22.41 GiB is allocated by PyTorch, and 42.21 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)
+2025-11-12 16:03:38,820 ignite.engine.engine.SupervisedTrainer ERROR: Current run is terminating due to exception: CUDA out of memory. Tried to allocate 1.72 GiB. GPU 0 has a total capacity of 23.51 GiB of which 1.39 GiB is free. Including non-PyTorch memory, this process has 22.10 GiB memory in use. Of the allocated memory 20.95 GiB is allocated by PyTorch, and 732.09 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)
+2025-11-12 16:03:38,820 ignite.engine.engine.SupervisedTrainer ERROR: Exception: CUDA out of memory. Tried to allocate 1.72 GiB. GPU 0 has a total capacity of 23.51 GiB of which 1.39 GiB is free. Including non-PyTorch memory, this process has 22.10 GiB memory in use. Of the allocated memory 20.95 GiB is allocated by PyTorch, and 732.09 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.10/dist-packages/ignite/engine/engine.py", line 1110, in _run_once_on_dataset_as_gen
+    self.state.output = self._process_function(self, self.state.batch)
+  File "/usr/local/lib/python3.10/dist-packages/monai/engines/trainer.py", line 264, in _iteration
+    _compute_pred_loss()
+  File "/usr/local/lib/python3.10/dist-packages/monai/engines/trainer.py", line 248, in _compute_pred_loss
+    engine.state.output[Keys.PRED] = engine.inferer(inputs, engine.network, *args, **kwargs)
+  File "/usr/local/lib/python3.10/dist-packages/monai/inferers/inferer.py", line 396, in __call__
+    return network(inputs, *args, **kwargs)
+  File "/usr/local/lib/python3.10/dist-packages/torch/nn/modules/module.py", line 1736, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/usr/local/lib/python3.10/dist-packages/torch/nn/modules/module.py", line 1747, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/workspaces/Average-Calibration-Losses/src/utils.py", line 217, in forward
+    logits = self.network(input)
+  File "/usr/local/lib/python3.10/dist-packages/torch/nn/modules/module.py", line 1736, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/usr/local/lib/python3.10/dist-packages/torch/nn/modules/module.py", line 1747, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/usr/local/lib/python3.10/dist-packages/monai/networks/nets/segresnet_ds.py", line 428, in forward
+    return self._forward(x)
+  File "/usr/local/lib/python3.10/dist-packages/monai/networks/nets/segresnet_ds.py", line 412, in _forward
+    x = level["blocks"](x)
+  File "/usr/local/lib/python3.10/dist-packages/torch/nn/modules/module.py", line 1736, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/usr/local/lib/python3.10/dist-packages/torch/nn/modules/module.py", line 1747, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/usr/local/lib/python3.10/dist-packages/torch/nn/modules/container.py", line 250, in forward
+    input = module(input)
+  File "/usr/local/lib/python3.10/dist-packages/torch/nn/modules/module.py", line 1736, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/usr/local/lib/python3.10/dist-packages/torch/nn/modules/module.py", line 1747, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/usr/local/lib/python3.10/dist-packages/monai/networks/nets/segresnet_ds.py", line 123, in forward
+    x = self.conv2(self.act2(self.norm2(self.conv1(self.act1(self.norm1(x))))))
+  File "/usr/local/lib/python3.10/dist-packages/torch/nn/modules/module.py", line 1736, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/usr/local/lib/python3.10/dist-packages/torch/nn/modules/module.py", line 1747, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/usr/local/lib/python3.10/dist-packages/torch/nn/modules/conv.py", line 725, in forward
+    return self._conv_forward(input, self.weight, self.bias)
+  File "/usr/local/lib/python3.10/dist-packages/torch/nn/modules/conv.py", line 720, in _conv_forward
+    return F.conv3d(
+  File "/usr/local/lib/python3.10/dist-packages/monai/data/meta_tensor.py", line 282, in __torch_function__
+    ret = super().__torch_function__(func, types, args, kwargs)
+  File "/usr/local/lib/python3.10/dist-packages/torch/_tensor.py", line 1512, in __torch_function__
+    ret = func(*args, **kwargs)
+torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 1.72 GiB. GPU 0 has a total capacity of 23.51 GiB of which 1.39 GiB is free. Including non-PyTorch memory, this process has 22.10 GiB memory in use. Of the allocated memory 20.95 GiB is allocated by PyTorch, and 732.09 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)
+2025-11-12 16:03:38,824 ignite.engine.engine.SupervisedTrainer ERROR: Engine run is terminating due to exception: CUDA out of memory. Tried to allocate 1.72 GiB. GPU 0 has a total capacity of 23.51 GiB of which 1.39 GiB is free. Including non-PyTorch memory, this process has 22.10 GiB memory in use. Of the allocated memory 20.95 GiB is allocated by PyTorch, and 732.09 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)
+2025-11-12 16:03:38,825 ignite.engine.engine.SupervisedTrainer ERROR: Exception: CUDA out of memory. Tried to allocate 1.72 GiB. GPU 0 has a total capacity of 23.51 GiB of which 1.39 GiB is free. Including non-PyTorch memory, this process has 22.10 GiB memory in use. Of the allocated memory 20.95 GiB is allocated by PyTorch, and 732.09 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.10/dist-packages/ignite/engine/engine.py", line 972, in _internal_run_as_gen
+    epoch_time_taken += yield from self._run_once_on_dataset_as_gen()
+  File "/usr/local/lib/python3.10/dist-packages/ignite/engine/engine.py", line 1128, in _run_once_on_dataset_as_gen
+    self._handle_exception(e)
+  File "/usr/local/lib/python3.10/dist-packages/ignite/engine/engine.py", line 658, in _handle_exception
+    self._fire_event(Events.EXCEPTION_RAISED, e)
+  File "/usr/local/lib/python3.10/dist-packages/ignite/engine/engine.py", line 435, in _fire_event
+    func(*first, *(event_args + others), **kwargs)
+  File "/usr/local/lib/python3.10/dist-packages/monai/handlers/stats_handler.py", line 201, in exception_raised
+    raise e
+  File "/usr/local/lib/python3.10/dist-packages/ignite/engine/engine.py", line 1110, in _run_once_on_dataset_as_gen
+    self.state.output = self._process_function(self, self.state.batch)
+  File "/usr/local/lib/python3.10/dist-packages/monai/engines/trainer.py", line 264, in _iteration
+    _compute_pred_loss()
+  File "/usr/local/lib/python3.10/dist-packages/monai/engines/trainer.py", line 248, in _compute_pred_loss
+    engine.state.output[Keys.PRED] = engine.inferer(inputs, engine.network, *args, **kwargs)
+  File "/usr/local/lib/python3.10/dist-packages/monai/inferers/inferer.py", line 396, in __call__
+    return network(inputs, *args, **kwargs)
+  File "/usr/local/lib/python3.10/dist-packages/torch/nn/modules/module.py", line 1736, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/usr/local/lib/python3.10/dist-packages/torch/nn/modules/module.py", line 1747, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/workspaces/Average-Calibration-Losses/src/utils.py", line 217, in forward
+    logits = self.network(input)
+  File "/usr/local/lib/python3.10/dist-packages/torch/nn/modules/module.py", line 1736, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/usr/local/lib/python3.10/dist-packages/torch/nn/modules/module.py", line 1747, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/usr/local/lib/python3.10/dist-packages/monai/networks/nets/segresnet_ds.py", line 428, in forward
+    return self._forward(x)
+  File "/usr/local/lib/python3.10/dist-packages/monai/networks/nets/segresnet_ds.py", line 412, in _forward
+    x = level["blocks"](x)
+  File "/usr/local/lib/python3.10/dist-packages/torch/nn/modules/module.py", line 1736, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/usr/local/lib/python3.10/dist-packages/torch/nn/modules/module.py", line 1747, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/usr/local/lib/python3.10/dist-packages/torch/nn/modules/container.py", line 250, in forward
+    input = module(input)
+  File "/usr/local/lib/python3.10/dist-packages/torch/nn/modules/module.py", line 1736, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/usr/local/lib/python3.10/dist-packages/torch/nn/modules/module.py", line 1747, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/usr/local/lib/python3.10/dist-packages/monai/networks/nets/segresnet_ds.py", line 123, in forward
+    x = self.conv2(self.act2(self.norm2(self.conv1(self.act1(self.norm1(x))))))
+  File "/usr/local/lib/python3.10/dist-packages/torch/nn/modules/module.py", line 1736, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/usr/local/lib/python3.10/dist-packages/torch/nn/modules/module.py", line 1747, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/usr/local/lib/python3.10/dist-packages/torch/nn/modules/conv.py", line 725, in forward
+    return self._conv_forward(input, self.weight, self.bias)
+  File "/usr/local/lib/python3.10/dist-packages/torch/nn/modules/conv.py", line 720, in _conv_forward
+    return F.conv3d(
+  File "/usr/local/lib/python3.10/dist-packages/monai/data/meta_tensor.py", line 282, in __torch_function__
+    ret = super().__torch_function__(func, types, args, kwargs)
+  File "/usr/local/lib/python3.10/dist-packages/torch/_tensor.py", line 1512, in __torch_function__
+    ret = func(*args, **kwargs)
+torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 1.72 GiB. GPU 0 has a total capacity of 23.51 GiB of which 1.39 GiB is free. Including non-PyTorch memory, this process has 22.10 GiB memory in use. Of the allocated memory 20.95 GiB is allocated by PyTorch, and 732.09 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)
+2025-11-12 16:04:18,596 ignite.engine.engine.SupervisedTrainer INFO: Epoch: 1/1, Iter: 1/53 -- train_loss: 0.0012
+2025-11-12 16:04:19,935 ignite.engine.engine.SupervisedTrainer INFO: Epoch: 1/1, Iter: 2/53 -- train_loss: 0.0029
+2025-11-12 16:04:21,344 ignite.engine.engine.SupervisedTrainer INFO: Epoch: 1/1, Iter: 3/53 -- train_loss: 0.0090
+2025-11-12 16:04:22,664 ignite.engine.engine.SupervisedTrainer INFO: Epoch: 1/1, Iter: 4/53 -- train_loss: 0.0132
+2025-11-12 16:04:23,976 ignite.engine.engine.SupervisedTrainer INFO: Epoch: 1/1, Iter: 5/53 -- train_loss: 0.0069
+2025-11-12 16:04:25,368 ignite.engine.engine.SupervisedTrainer INFO: Epoch: 1/1, Iter: 6/53 -- train_loss: 0.0123
+2025-11-12 16:04:26,996 ignite.engine.engine.SupervisedTrainer INFO: Epoch: 1/1, Iter: 7/53 -- train_loss: 0.0013
+2025-11-12 16:04:28,495 ignite.engine.engine.SupervisedTrainer INFO: Epoch: 1/1, Iter: 8/53 -- train_loss: 0.0023
+2025-11-12 16:04:29,852 ignite.engine.engine.SupervisedTrainer INFO: Epoch: 1/1, Iter: 9/53 -- train_loss: 0.0049
+2025-11-12 16:04:31,076 ignite.engine.engine.SupervisedTrainer INFO: Epoch: 1/1, Iter: 10/53 -- train_loss: 0.0018
+2025-11-12 16:04:32,489 ignite.engine.engine.SupervisedTrainer INFO: Epoch: 1/1, Iter: 11/53 -- train_loss: 0.0036
+2025-11-12 16:04:33,899 ignite.engine.engine.SupervisedTrainer INFO: Epoch: 1/1, Iter: 12/53 -- train_loss: 0.0024
+2025-11-12 16:04:35,150 ignite.engine.engine.SupervisedTrainer INFO: Epoch: 1/1, Iter: 13/53 -- train_loss: 0.0016
+2025-11-12 16:04:36,611 ignite.engine.engine.SupervisedTrainer INFO: Epoch: 1/1, Iter: 14/53 -- train_loss: 0.0040
+2025-11-12 16:04:37,845 ignite.engine.engine.SupervisedTrainer INFO: Epoch: 1/1, Iter: 15/53 -- train_loss: 0.0011
+2025-11-12 16:04:39,237 ignite.engine.engine.SupervisedTrainer INFO: Epoch: 1/1, Iter: 16/53 -- train_loss: 0.0031
+2025-11-12 16:04:40,649 ignite.engine.engine.SupervisedTrainer INFO: Epoch: 1/1, Iter: 17/53 -- train_loss: 0.0027
+2025-11-12 16:04:42,082 ignite.engine.engine.SupervisedTrainer INFO: Epoch: 1/1, Iter: 18/53 -- train_loss: 0.0038
+2025-11-12 16:04:43,539 ignite.engine.engine.SupervisedTrainer INFO: Epoch: 1/1, Iter: 19/53 -- train_loss: 0.0016
+2025-11-12 16:04:44,932 ignite.engine.engine.SupervisedTrainer INFO: Epoch: 1/1, Iter: 20/53 -- train_loss: 0.0026
+2025-11-12 16:04:46,144 ignite.engine.engine.SupervisedTrainer INFO: Epoch: 1/1, Iter: 21/53 -- train_loss: 0.0020
+2025-11-12 16:04:47,539 ignite.engine.engine.SupervisedTrainer INFO: Epoch: 1/1, Iter: 22/53 -- train_loss: 0.0033
+2025-11-12 16:04:48,685 ignite.engine.engine.SupervisedTrainer INFO: Epoch: 1/1, Iter: 23/53 -- train_loss: 0.0196
+2025-11-12 16:04:50,075 ignite.engine.engine.SupervisedTrainer INFO: Epoch: 1/1, Iter: 24/53 -- train_loss: 0.0017
+2025-11-12 16:04:51,177 ignite.engine.engine.SupervisedTrainer INFO: Epoch: 1/1, Iter: 25/53 -- train_loss: 0.0007
+2025-11-12 16:04:52,505 ignite.engine.engine.SupervisedTrainer INFO: Epoch: 1/1, Iter: 26/53 -- train_loss: 0.0030
+2025-11-12 16:04:54,014 ignite.engine.engine.SupervisedTrainer INFO: Epoch: 1/1, Iter: 27/53 -- train_loss: 0.0024
+2025-11-12 16:04:55,439 ignite.engine.engine.SupervisedTrainer INFO: Epoch: 1/1, Iter: 28/53 -- train_loss: 0.0023
+2025-11-12 16:04:56,662 ignite.engine.engine.SupervisedTrainer INFO: Epoch: 1/1, Iter: 29/53 -- train_loss: 0.0049
+2025-11-12 16:04:58,051 ignite.engine.engine.SupervisedTrainer INFO: Epoch: 1/1, Iter: 30/53 -- train_loss: 0.0071
+2025-11-12 16:04:59,322 ignite.engine.engine.SupervisedTrainer INFO: Epoch: 1/1, Iter: 31/53 -- train_loss: 0.0038
+2025-11-12 16:05:00,467 ignite.engine.engine.SupervisedTrainer INFO: Epoch: 1/1, Iter: 32/53 -- train_loss: 0.0109
+2025-11-12 16:05:01,713 ignite.engine.engine.SupervisedTrainer INFO: Epoch: 1/1, Iter: 33/53 -- train_loss: 0.0054
+2025-11-12 16:05:03,277 ignite.engine.engine.SupervisedTrainer INFO: Epoch: 1/1, Iter: 34/53 -- train_loss: 0.0043
+2025-11-12 16:05:04,675 ignite.engine.engine.SupervisedTrainer INFO: Epoch: 1/1, Iter: 35/53 -- train_loss: 0.0061
+2025-11-12 16:05:05,998 ignite.engine.engine.SupervisedTrainer INFO: Epoch: 1/1, Iter: 36/53 -- train_loss: 0.0021
+2025-11-12 16:05:07,261 ignite.engine.engine.SupervisedTrainer INFO: Epoch: 1/1, Iter: 37/53 -- train_loss: 0.0064
+2025-11-12 16:05:08,676 ignite.engine.engine.SupervisedTrainer INFO: Epoch: 1/1, Iter: 38/53 -- train_loss: 0.0031
+2025-11-12 16:05:10,071 ignite.engine.engine.SupervisedTrainer INFO: Epoch: 1/1, Iter: 39/53 -- train_loss: 0.0032
+2025-11-12 16:05:11,331 ignite.engine.engine.SupervisedTrainer INFO: Epoch: 1/1, Iter: 40/53 -- train_loss: 0.0017
+2025-11-12 16:05:12,484 ignite.engine.engine.SupervisedTrainer INFO: Epoch: 1/1, Iter: 41/53 -- train_loss: 0.0006
+2025-11-12 16:05:13,893 ignite.engine.engine.SupervisedTrainer INFO: Epoch: 1/1, Iter: 42/53 -- train_loss: 0.0117
+2025-11-12 16:05:15,033 ignite.engine.engine.SupervisedTrainer INFO: Epoch: 1/1, Iter: 43/53 -- train_loss: 0.0053
+2025-11-12 16:05:16,442 ignite.engine.engine.SupervisedTrainer INFO: Epoch: 1/1, Iter: 44/53 -- train_loss: 0.0058
+2025-11-12 16:05:17,858 ignite.engine.engine.SupervisedTrainer INFO: Epoch: 1/1, Iter: 45/53 -- train_loss: 0.0137
+2025-11-12 16:05:19,287 ignite.engine.engine.SupervisedTrainer INFO: Epoch: 1/1, Iter: 46/53 -- train_loss: 0.0033
+2025-11-12 16:05:20,425 ignite.engine.engine.SupervisedTrainer INFO: Epoch: 1/1, Iter: 47/53 -- train_loss: 0.0064
+2025-11-12 16:05:21,565 ignite.engine.engine.SupervisedTrainer INFO: Epoch: 1/1, Iter: 48/53 -- train_loss: 0.0068
+2025-11-12 16:05:23,000 ignite.engine.engine.SupervisedTrainer INFO: Epoch: 1/1, Iter: 49/53 -- train_loss: 0.0064
+2025-11-12 16:05:24,329 ignite.engine.engine.SupervisedTrainer INFO: Epoch: 1/1, Iter: 50/53 -- train_loss: 0.0048
+2025-11-12 16:05:25,586 ignite.engine.engine.SupervisedTrainer INFO: Epoch: 1/1, Iter: 51/53 -- train_loss: 0.0039
+2025-11-12 16:05:26,727 ignite.engine.engine.SupervisedTrainer INFO: Epoch: 1/1, Iter: 52/53 -- train_loss: 0.0013
+2025-11-12 16:05:28,055 ignite.engine.engine.SupervisedTrainer INFO: Epoch: 1/1, Iter: 53/53 -- train_loss: 0.0034
+2025-11-12 16:05:28,208 ignite.engine.engine.SupervisedTrainer INFO: Saved checkpoint at epoch: 1
+2025-11-12 16:05:28,208 ignite.engine.engine.SupervisedTrainer INFO: Epoch[1] Complete. Time taken: 00:01:14.006

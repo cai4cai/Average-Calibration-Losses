@@ -1,0 +1,126 @@
+num_epochs: 1  # Increase epochs slightly to get more samples
+batch_size: 2  # Reduce batch size due to cropping overhead
+
+##########################
+# PATH DEFINITIONS
+##########################
+
+# Get checkpoint with highest validation metric:
+ckpt_path: '$max(glob.glob(os.path.join(@output_dir, "model_key_metric=*.pt")), key=lambda f: float(os.path.basename(f).split("=")[1].rstrip(".pt")), default="none")'
+
+# Redfine output directory for temp scaled model and metrics and checkpoints
+output_dir_temp_scaled: $@output_dir + '_temp_scaled'
+
+# Temp scaling specific transforms - use cropping like in training for fairness
+temp_scale_transforms:
+  - _target_: FgBgToIndicesd
+    keys: 'label'
+    fg_postfix: '_fg'
+    bg_postfix: '_bg'
+    image_key: 'image'
+  - _target_: SpatialPadd
+    keys: ['image', 'label']
+    spatial_size: '@patch_size'
+    mode: ["reflect", "constant"]
+  - _target_: RandCropByPosNegLabeld
+    keys: ['image', 'label']
+    label_key: 'label'
+    spatial_size: '@patch_size'
+    pos: 1
+    neg: 1
+    num_samples: 2  # Multiple samples per volume for better temperature estimation
+    fg_indices_key: 'label_fg'
+    bg_indices_key: 'label_bg'
+    image_key: 'image'
+    image_threshold: 0
+  # - _target_: SpatialPadd
+  #   keys: '@both_keys'
+  #   spatial_size: [512, 512, 32]
+
+##########################
+# TEMP SCALING DATASET
+##########################
+
+dataset:
+  _target_: Dataset
+  data: '@val_sub'
+  transform:
+    _target_: Compose
+    transforms: $@load_transforms + @resample_transforms + @normalize_transforms + @temp_scale_transforms
+
+dataloader:
+  _target_: DataLoader
+  dataset: '@dataset'
+  batch_size: '@batch_size'
+
+
+##########################
+# HANDLERS
+##########################
+
+handlers:
+- _target_: LogfileHandler  # log outputs from the validation engine
+  output_dir: '@output_dir_temp_scaled'
+- _target_: StatsHandler
+  name: null  # use engine.logger as the Logger object to log to
+  tag_name: train_loss
+  output_transform: $monai.handlers.from_engine(['loss'], first=True)  # log loss value
+- _target_: CheckpointSaver
+  save_dir: '@output_dir_temp_scaled'
+  save_dict:
+    model: '@model'  # Save the TemperatureScaling wrapper, not just the base network
+  save_interval: 1
+  save_final: true
+
+
+##########################
+# TEMP SCALE MODEL
+##########################
+model:
+  _target_: src.utils.TemperatureScaling
+  network: '@network'
+  network_ckpt_path: '@ckpt_path'
+  # use_main_output_only: false  # Only use main output for temp scaling, not deep supervision outputs
+
+
+##########################
+# OPTIMIZER AND LOSS FUNCTION
+##########################
+
+optimizer:
+  _target_: torch.optim.Adam
+  params: $@model.parameters()
+  lr: 0.001
+
+lossfn:
+  _target_: src.losses.CrossEntropyLoss
+  to_onehot_y: true
+  ce_params:
+    reduction: 'mean'
+
+# deep_supervised_loss_fn:
+#   _target_: DeepSupervisionLoss
+#   loss: '@lossfn'
+
+##########################
+# TRAINER CONFIGURATION
+##########################
+
+trainer:
+  _target_: SupervisedTrainer
+  max_epochs: '@num_epochs'
+  device: '@device'
+  train_data_loader: '@dataloader'
+  network: '@model'
+  loss_function: '@lossfn'
+  optimizer: '@optimizer'
+  key_train_metric: null
+  train_handlers: '@handlers'
+
+
+##########################
+# RUN CONFIGURATION
+##########################
+
+run:
+- $@trainer.run()

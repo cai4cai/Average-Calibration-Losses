@@ -71,7 +71,7 @@ docker run --rm \
     python ./run_monai_bundle.py "$@" --seed $SEED
 
 # --restart on-failure \   # Incompatible with --rm  choose one
-
+# -e PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True \
 # Explanation of options:
 # -d: Run the container in detached mode (in the background)
 # --rm: Automatically remove the container when it exits
