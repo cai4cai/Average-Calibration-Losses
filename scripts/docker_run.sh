@@ -60,7 +60,7 @@ echo "PROJECT_DIR: $PROJECT_DIR"
 echo "DATA_DIR: $DATA_DIR"
 
 # Run the Docker container with the configured arguments
-docker run -d --rm \
+docker run --rm \
     --gpus '"device='$GPU'"' \
     --cpuset-cpus=$CPUS \
     --shm-size=$SHM_SIZE \
@@ -71,7 +71,7 @@ docker run -d --rm \
     python ./run_monai_bundle.py "$@" --seed $SEED
 
 # --restart on-failure \   # Incompatible with --rm  choose one
-
+# -e PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True \
 # Explanation of options:
 # -d: Run the container in detached mode (in the background)
 # --rm: Automatically remove the container when it exits

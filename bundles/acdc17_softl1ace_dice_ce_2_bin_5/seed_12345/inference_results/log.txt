@@ -1,0 +1,4 @@
+2025-11-18 16:09:35,473 ignite.engine.engine.SupervisedEvaluator INFO: Restored all variables from bundles/acdc17_softl1ace_dice_ce_2_bin_5/seed_12345/model_key_metric=0.8858.pt
+2025-11-18 16:10:28,129 ignite.engine.engine.SupervisedEvaluator INFO: Got new best metric of mean_dice: 0.8685386776924133
+2025-11-18 16:10:28,161 ignite.engine.engine.SupervisedEvaluator INFO: Epoch[1] Complete. Time taken: 00:00:52.601
+2025-11-18 18:13:28,394 ignite.engine.engine.SupervisedEvaluator ERROR: Engine run is terminating due to exception: Attempting to deserialize object on a CUDA device but torch.cuda.is_available() is False. If you are running on a CPU-only machine, please use torch.load with map_location=torch.device('cpu') to map your storages to the CPU.

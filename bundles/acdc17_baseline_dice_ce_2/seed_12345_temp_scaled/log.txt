@@ -1,0 +1,66 @@
+2025-11-18 18:16:04,150 ignite.engine.engine.SupervisedTrainer ERROR: Current run is terminating due to exception: CUDA out of memory. Tried to allocate 1024.00 MiB. GPU 0 has a total capacity of 23.51 GiB of which 463.44 MiB is free. Including non-PyTorch memory, this process has 18.32 GiB memory in use. Of the allocated memory 17.31 GiB is allocated by PyTorch, and 583.65 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)
+2025-11-18 18:16:04,151 ignite.engine.engine.SupervisedTrainer ERROR: Exception: CUDA out of memory. Tried to allocate 1024.00 MiB. GPU 0 has a total capacity of 23.51 GiB of which 463.44 MiB is free. Including non-PyTorch memory, this process has 18.32 GiB memory in use. Of the allocated memory 17.31 GiB is allocated by PyTorch, and 583.65 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.10/dist-packages/ignite/engine/engine.py", line 1110, in _run_once_on_dataset_as_gen
+    self.state.output = self._process_function(self, self.state.batch)
+  File "/usr/local/lib/python3.10/dist-packages/monai/engines/trainer.py", line 265, in _iteration
+    engine.state.output[Keys.LOSS].backward()
+  File "/usr/local/lib/python3.10/dist-packages/torch/_tensor.py", line 572, in backward
+    return handle_torch_function(
+  File "/usr/local/lib/python3.10/dist-packages/torch/overrides.py", line 1739, in handle_torch_function
+    result = torch_func_method(public_api, types, args, kwargs)
+  File "/usr/local/lib/python3.10/dist-packages/monai/data/meta_tensor.py", line 282, in __torch_function__
+    ret = super().__torch_function__(func, types, args, kwargs)
+  File "/usr/local/lib/python3.10/dist-packages/torch/_tensor.py", line 1512, in __torch_function__
+    ret = func(*args, **kwargs)
+  File "/usr/local/lib/python3.10/dist-packages/torch/_tensor.py", line 581, in backward
+    torch.autograd.backward(
+  File "/usr/local/lib/python3.10/dist-packages/torch/autograd/__init__.py", line 347, in backward
+    _engine_run_backward(
+  File "/usr/local/lib/python3.10/dist-packages/torch/autograd/graph.py", line 825, in _engine_run_backward
+    return Variable._execution_engine.run_backward(  # Calls into the C++ engine to run the backward pass
+torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 1024.00 MiB. GPU 0 has a total capacity of 23.51 GiB of which 463.44 MiB is free. Including non-PyTorch memory, this process has 18.32 GiB memory in use. Of the allocated memory 17.31 GiB is allocated by PyTorch, and 583.65 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)
+2025-11-18 18:16:04,152 ignite.engine.engine.SupervisedTrainer ERROR: Engine run is terminating due to exception: CUDA out of memory. Tried to allocate 1024.00 MiB. GPU 0 has a total capacity of 23.51 GiB of which 463.44 MiB is free. Including non-PyTorch memory, this process has 18.32 GiB memory in use. Of the allocated memory 17.31 GiB is allocated by PyTorch, and 583.65 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)
+2025-11-18 18:16:04,152 ignite.engine.engine.SupervisedTrainer ERROR: Exception: CUDA out of memory. Tried to allocate 1024.00 MiB. GPU 0 has a total capacity of 23.51 GiB of which 463.44 MiB is free. Including non-PyTorch memory, this process has 18.32 GiB memory in use. Of the allocated memory 17.31 GiB is allocated by PyTorch, and 583.65 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.10/dist-packages/ignite/engine/engine.py", line 972, in _internal_run_as_gen
+    epoch_time_taken += yield from self._run_once_on_dataset_as_gen()
+  File "/usr/local/lib/python3.10/dist-packages/ignite/engine/engine.py", line 1128, in _run_once_on_dataset_as_gen
+    self._handle_exception(e)
+  File "/usr/local/lib/python3.10/dist-packages/ignite/engine/engine.py", line 658, in _handle_exception
+    self._fire_event(Events.EXCEPTION_RAISED, e)
+  File "/usr/local/lib/python3.10/dist-packages/ignite/engine/engine.py", line 435, in _fire_event
+    func(*first, *(event_args + others), **kwargs)
+  File "/usr/local/lib/python3.10/dist-packages/monai/handlers/stats_handler.py", line 201, in exception_raised
+    raise e
+  File "/usr/local/lib/python3.10/dist-packages/ignite/engine/engine.py", line 1110, in _run_once_on_dataset_as_gen
+    self.state.output = self._process_function(self, self.state.batch)
+  File "/usr/local/lib/python3.10/dist-packages/monai/engines/trainer.py", line 265, in _iteration
+    engine.state.output[Keys.LOSS].backward()
+  File "/usr/local/lib/python3.10/dist-packages/torch/_tensor.py", line 572, in backward
+    return handle_torch_function(
+  File "/usr/local/lib/python3.10/dist-packages/torch/overrides.py", line 1739, in handle_torch_function
+    result = torch_func_method(public_api, types, args, kwargs)
+  File "/usr/local/lib/python3.10/dist-packages/monai/data/meta_tensor.py", line 282, in __torch_function__
+    ret = super().__torch_function__(func, types, args, kwargs)
+  File "/usr/local/lib/python3.10/dist-packages/torch/_tensor.py", line 1512, in __torch_function__
+    ret = func(*args, **kwargs)
+  File "/usr/local/lib/python3.10/dist-packages/torch/_tensor.py", line 581, in backward
+    torch.autograd.backward(
+  File "/usr/local/lib/python3.10/dist-packages/torch/autograd/__init__.py", line 347, in backward
+    _engine_run_backward(
+  File "/usr/local/lib/python3.10/dist-packages/torch/autograd/graph.py", line 825, in _engine_run_backward
+    return Variable._execution_engine.run_backward(  # Calls into the C++ engine to run the backward pass
+torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 1024.00 MiB. GPU 0 has a total capacity of 23.51 GiB of which 463.44 MiB is free. Including non-PyTorch memory, this process has 18.32 GiB memory in use. Of the allocated memory 17.31 GiB is allocated by PyTorch, and 583.65 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)
+2025-11-18 18:17:15,415 ignite.engine.engine.SupervisedTrainer INFO: Epoch: 1/1, Iter: 1/10 -- train_loss: 0.0239
+2025-11-18 18:17:17,163 ignite.engine.engine.SupervisedTrainer INFO: Epoch: 1/1, Iter: 2/10 -- train_loss: 0.0279
+2025-11-18 18:17:18,733 ignite.engine.engine.SupervisedTrainer INFO: Epoch: 1/1, Iter: 3/10 -- train_loss: 0.0232
+2025-11-18 18:17:20,260 ignite.engine.engine.SupervisedTrainer INFO: Epoch: 1/1, Iter: 4/10 -- train_loss: 0.0180
+2025-11-18 18:17:21,771 ignite.engine.engine.SupervisedTrainer INFO: Epoch: 1/1, Iter: 5/10 -- train_loss: 0.0222
+2025-11-18 18:17:23,276 ignite.engine.engine.SupervisedTrainer INFO: Epoch: 1/1, Iter: 6/10 -- train_loss: 0.0236
+2025-11-18 18:17:24,812 ignite.engine.engine.SupervisedTrainer INFO: Epoch: 1/1, Iter: 7/10 -- train_loss: 0.0165
+2025-11-18 18:17:26,333 ignite.engine.engine.SupervisedTrainer INFO: Epoch: 1/1, Iter: 8/10 -- train_loss: 0.0168
+2025-11-18 18:17:27,861 ignite.engine.engine.SupervisedTrainer INFO: Epoch: 1/1, Iter: 9/10 -- train_loss: 0.0208
+2025-11-18 18:17:29,419 ignite.engine.engine.SupervisedTrainer INFO: Epoch: 1/1, Iter: 10/10 -- train_loss: 0.0309
+2025-11-18 18:17:29,581 ignite.engine.engine.SupervisedTrainer INFO: Saved checkpoint at epoch: 1
+2025-11-18 18:17:29,581 ignite.engine.engine.SupervisedTrainer INFO: Epoch[1] Complete. Time taken: 00:00:26.351

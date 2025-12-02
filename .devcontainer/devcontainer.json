@@ -7,6 +7,7 @@
     "runArgs": [
         "--gpus",
         "all",
+        "--cpuset-cpus", "8-23",
         "--shm-size",
         "32g",
         "--volume",

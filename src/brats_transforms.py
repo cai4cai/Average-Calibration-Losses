@@ -13,11 +13,13 @@ class ConvertToBratsClassesd(MapTransform):
     Works with unbatched data with shape [1, H, W, D].
 
     IN (As stored on disk):
+    0: Background (BG)
     1: necrotic tumour core (NCR)
     2: peritumoral edema (ED)
     3: GD-enhancing tumor (ET) - previously label 4
 
     OUT ONEHOT (As required for eval):
+    0: Background (BG)
     1: Enhancing tumour (ET) = ET
     2: Tumour core (TC) = NCR + ET
     3: Whole tumour (WT) = NCR + ED + ET

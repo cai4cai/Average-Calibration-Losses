@@ -4,4 +4,17 @@ from .calibration import (
     CalibrationErrorHandler,
 )
 
-__all__ = ["CalibrationError", "ReliabilityDiagramHandler", "CalibrationErrorHandler"]
+from .additional_metrics import (
+    BrierScoreHandler,
+    CategoricalNLLHandler,
+    AURCHandler,
+)
+
+__all__ = [
+    "CalibrationError",
+    "ReliabilityDiagramHandler",
+    "CalibrationErrorHandler",
+    "BrierScoreHandler",
+    "CategoricalNLLHandler",
+    "AURCHandler",
+]

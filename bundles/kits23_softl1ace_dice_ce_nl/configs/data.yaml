@@ -14,8 +14,8 @@ patch_size: [128, 128, 128]
 val_windows_size: [256, 256, 256]
 resample_resolution: [1.0, 1.0, 1.0]
 
-class_names: $['background', 'kidney', 'tumour', 'cyst']  # Original classes
-# class_names: $['background', 'tumour', 'kidney_mass', 'kindey_and_masses']  # HEC classes
+# class_names: $['background', 'kidney', 'tumour', 'cyst']  # Original classes
+class_names: $['background', 'tumour', 'kidney_mass', 'kindey_and_masses']  # HEC classes
 
 batch_name_transform: $src.utils.meta_data_batch_transform_dir  # case name in is directory
 image_name_transform: $src.utils.meta_data_image_transform_dir
@@ -23,8 +23,8 @@ image_name_transform: $src.utils.meta_data_image_transform_dir
 ##########################
 # DATASET SETUP
 ##########################
-# dataset_dir: '../data/kits23/dataset'
-dataset_dir: '../data/kits23_complete/dataset'  # using this to perform analysis on subset of dataset with no missing GT classses
+dataset_dir: '../data/kits23/dataset'
+# dataset_dir: '../data/kits23_complete/dataset'  # using this to perform analysis on subset of dataset with no missing GT classses
 test_seed: 42
 test_split_ratio: 0.2
 
@@ -36,8 +36,8 @@ all_dicts: "$[{'image': img, 'label': lbl} for img, lbl in zip(@all_images, @all
 # Split the all_dicts into training and testing subsets
 partitions_train_test: "$monai.data.partition_dataset(@all_dicts, (0.8, 0.2), shuffle=True, seed=@test_seed)"
 data_dicts: "$@partitions_train_test[0]"  # used for training and validation
-# test_sub: "$@partitions_train_test[1]"  # used as the hold out test set
-test_sub: "$@all_dicts"  # using this to perform analysis on subset of dataset with no missing GT classses
+test_sub: "$@partitions_train_test[1]"  # used as the hold out test set
+# test_sub: "$@all_dicts"  # using this to perform analysis on subset of dataset with no missing GT classses
 
 partitions: '$monai.data.partition_dataset(@data_dicts, (9, 1), shuffle=True, seed=@seed)'
 train_sub: '$@partitions[0]'
@@ -132,23 +132,23 @@ val_transforms:
 #   - _target_: src.transforms.ConvertToKits23ClassesSoftmaxd  # softmax predicion to combined softmax kits classes
 #     keys: '@pred'
 
-# val_postprocessing:   # validation and inference with HEC classes
-#   _target_: Compose
-#   transforms:
-#   - _target_: Activationsd  # softmax prediction
-#     keys: '@pred'
-#     softmax: true
-#   - _target_: src.transforms.ConvertToKits23Classesd
-#     keys: '@label'
-#   - _target_: src.transforms.ConvertToKits23ClassesSoftmaxd
-#     keys: '@pred'
-
-val_postprocessing:  # validation and inference without HEC classes
+val_postprocessing:   # validation and inference with HEC classes
   _target_: Compose
   transforms:
-  - _target_: Activationsd
+  - _target_: Activationsd  # softmax prediction
     keys: '@pred'
     softmax: true
-  - _target_: AsDiscreted
+  - _target_: src.transforms.ConvertToKits23Classesd
     keys: '@label'
-    to_onehot: '@num_classes'
+  - _target_: src.transforms.ConvertToKits23ClassesSoftmaxd
+    keys: '@pred'
+
+# val_postprocessing:  # validation and inference without HEC classes
+#   _target_: Compose
+#   transforms:
+#   - _target_: Activationsd
+#     keys: '@pred'
+#     softmax: true
+#   - _target_: AsDiscreted
+#     keys: '@label'
+#     to_onehot: '@num_classes'
