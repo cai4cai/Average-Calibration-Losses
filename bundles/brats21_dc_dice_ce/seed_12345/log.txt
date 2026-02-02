@@ -1,0 +1,210 @@
+2026-01-27 17:13:52,836 ignite.engine.engine.SupervisedTrainer ERROR: Current run is terminating due to exception: CUDA out of memory. Tried to allocate 4.09 GiB. GPU 0 has a total capacity of 31.36 GiB of which 2.79 GiB is free. Including non-PyTorch memory, this process has 28.55 GiB memory in use. Of the allocated memory 27.89 GiB is allocated by PyTorch, and 53.50 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)
+2026-01-27 17:13:52,836 ignite.engine.engine.SupervisedTrainer ERROR: Exception: CUDA out of memory. Tried to allocate 4.09 GiB. GPU 0 has a total capacity of 31.36 GiB of which 2.79 GiB is free. Including non-PyTorch memory, this process has 28.55 GiB memory in use. Of the allocated memory 27.89 GiB is allocated by PyTorch, and 53.50 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.10/dist-packages/ignite/engine/engine.py", line 1132, in _run_once_on_dataset_as_gen
+    self.state.output = self._process_function(self, self.state.batch)
+  File "/usr/local/lib/python3.10/dist-packages/monai/engines/trainer.py", line 253, in _iteration
+    _compute_pred_loss()
+  File "/usr/local/lib/python3.10/dist-packages/monai/engines/trainer.py", line 245, in _compute_pred_loss
+    engine.state.output[Keys.LOSS] = engine.loss_function(engine.state.output[Keys.PRED], targets).mean()
+  File "/usr/local/lib/python3.10/dist-packages/torch/nn/modules/module.py", line 1775, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/usr/local/lib/python3.10/dist-packages/torch/nn/modules/module.py", line 1786, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/usr/local/lib/python3.10/dist-packages/monai/losses/ds_loss.py", line 78, in forward
+    loss += weights[l] * self.get_loss(input[l].float(), target)
+  File "/usr/local/lib/python3.10/dist-packages/monai/losses/ds_loss.py", line 71, in get_loss
+    return self.loss(input, target)  # type: ignore[no-any-return]
+  File "/usr/local/lib/python3.10/dist-packages/torch/nn/modules/module.py", line 1775, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/usr/local/lib/python3.10/dist-packages/torch/nn/modules/module.py", line 1786, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/workspace/project/src/losses/dc_loss.py", line 378, in forward
+    dc_loss_val = self.dc_loss(y_pred, y_true)
+  File "/usr/local/lib/python3.10/dist-packages/torch/nn/modules/module.py", line 1775, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/usr/local/lib/python3.10/dist-packages/torch/nn/modules/module.py", line 1786, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/workspace/project/src/losses/dc_loss.py", line 205, in forward
+    logistic, _ = torch.sort(logistic.flatten())
+torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 4.09 GiB. GPU 0 has a total capacity of 31.36 GiB of which 2.79 GiB is free. Including non-PyTorch memory, this process has 28.55 GiB memory in use. Of the allocated memory 27.89 GiB is allocated by PyTorch, and 53.50 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)
+2026-01-27 17:14:02,159 ignite.engine.engine.SupervisedTrainer ERROR: Engine run is terminating due to exception: CUDA out of memory. Tried to allocate 4.09 GiB. GPU 0 has a total capacity of 31.36 GiB of which 2.79 GiB is free. Including non-PyTorch memory, this process has 28.55 GiB memory in use. Of the allocated memory 27.89 GiB is allocated by PyTorch, and 53.50 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)
+2026-01-27 17:14:02,159 ignite.engine.engine.SupervisedTrainer ERROR: Exception: CUDA out of memory. Tried to allocate 4.09 GiB. GPU 0 has a total capacity of 31.36 GiB of which 2.79 GiB is free. Including non-PyTorch memory, this process has 28.55 GiB memory in use. Of the allocated memory 27.89 GiB is allocated by PyTorch, and 53.50 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.10/dist-packages/ignite/engine/engine.py", line 991, in _internal_run_as_gen
+    epoch_time_taken += yield from self._run_once_on_dataset_as_gen()
+  File "/usr/local/lib/python3.10/dist-packages/ignite/engine/engine.py", line 1150, in _run_once_on_dataset_as_gen
+    self._handle_exception(e)
+  File "/usr/local/lib/python3.10/dist-packages/ignite/engine/engine.py", line 677, in _handle_exception
+    self._fire_event(Events.EXCEPTION_RAISED, e)
+  File "/usr/local/lib/python3.10/dist-packages/ignite/engine/engine.py", line 454, in _fire_event
+    func(*first, *(event_args + others), **kwargs)
+  File "/usr/local/lib/python3.10/dist-packages/monai/handlers/stats_handler.py", line 201, in exception_raised
+    raise e
+  File "/usr/local/lib/python3.10/dist-packages/ignite/engine/engine.py", line 1132, in _run_once_on_dataset_as_gen
+    self.state.output = self._process_function(self, self.state.batch)
+  File "/usr/local/lib/python3.10/dist-packages/monai/engines/trainer.py", line 253, in _iteration
+    _compute_pred_loss()
+  File "/usr/local/lib/python3.10/dist-packages/monai/engines/trainer.py", line 245, in _compute_pred_loss
+    engine.state.output[Keys.LOSS] = engine.loss_function(engine.state.output[Keys.PRED], targets).mean()
+  File "/usr/local/lib/python3.10/dist-packages/torch/nn/modules/module.py", line 1775, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/usr/local/lib/python3.10/dist-packages/torch/nn/modules/module.py", line 1786, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/usr/local/lib/python3.10/dist-packages/monai/losses/ds_loss.py", line 78, in forward
+    loss += weights[l] * self.get_loss(input[l].float(), target)
+  File "/usr/local/lib/python3.10/dist-packages/monai/losses/ds_loss.py", line 71, in get_loss
+    return self.loss(input, target)  # type: ignore[no-any-return]
+  File "/usr/local/lib/python3.10/dist-packages/torch/nn/modules/module.py", line 1775, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/usr/local/lib/python3.10/dist-packages/torch/nn/modules/module.py", line 1786, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/workspace/project/src/losses/dc_loss.py", line 378, in forward
+    dc_loss_val = self.dc_loss(y_pred, y_true)
+  File "/usr/local/lib/python3.10/dist-packages/torch/nn/modules/module.py", line 1775, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/usr/local/lib/python3.10/dist-packages/torch/nn/modules/module.py", line 1786, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/workspace/project/src/losses/dc_loss.py", line 205, in forward
+    logistic, _ = torch.sort(logistic.flatten())
+torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 4.09 GiB. GPU 0 has a total capacity of 31.36 GiB of which 2.79 GiB is free. Including non-PyTorch memory, this process has 28.55 GiB memory in use. Of the allocated memory 27.89 GiB is allocated by PyTorch, and 53.50 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)
+2026-01-27 17:15:09,619 ignite.engine.engine.SupervisedTrainer ERROR: Current run is terminating due to exception: CUDA out of memory. Tried to allocate 2.05 GiB. GPU 0 has a total capacity of 31.36 GiB of which 1.43 GiB is free. Including non-PyTorch memory, this process has 29.92 GiB memory in use. Of the allocated memory 29.25 GiB is allocated by PyTorch, and 61.59 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)
+2026-01-27 17:15:09,620 ignite.engine.engine.SupervisedTrainer ERROR: Exception: CUDA out of memory. Tried to allocate 2.05 GiB. GPU 0 has a total capacity of 31.36 GiB of which 1.43 GiB is free. Including non-PyTorch memory, this process has 29.92 GiB memory in use. Of the allocated memory 29.25 GiB is allocated by PyTorch, and 61.59 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.10/dist-packages/ignite/engine/engine.py", line 1132, in _run_once_on_dataset_as_gen
+    self.state.output = self._process_function(self, self.state.batch)
+  File "/usr/local/lib/python3.10/dist-packages/monai/engines/trainer.py", line 253, in _iteration
+    _compute_pred_loss()
+  File "/usr/local/lib/python3.10/dist-packages/monai/engines/trainer.py", line 245, in _compute_pred_loss
+    engine.state.output[Keys.LOSS] = engine.loss_function(engine.state.output[Keys.PRED], targets).mean()
+  File "/usr/local/lib/python3.10/dist-packages/torch/nn/modules/module.py", line 1775, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/usr/local/lib/python3.10/dist-packages/torch/nn/modules/module.py", line 1786, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/usr/local/lib/python3.10/dist-packages/monai/losses/ds_loss.py", line 78, in forward
+    loss += weights[l] * self.get_loss(input[l].float(), target)
+  File "/usr/local/lib/python3.10/dist-packages/monai/losses/ds_loss.py", line 71, in get_loss
+    return self.loss(input, target)  # type: ignore[no-any-return]
+  File "/usr/local/lib/python3.10/dist-packages/torch/nn/modules/module.py", line 1775, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/usr/local/lib/python3.10/dist-packages/torch/nn/modules/module.py", line 1786, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/workspace/project/src/losses/dc_loss.py", line 378, in forward
+    dc_loss_val = self.dc_loss(y_pred, y_true)
+  File "/usr/local/lib/python3.10/dist-packages/torch/nn/modules/module.py", line 1775, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/usr/local/lib/python3.10/dist-packages/torch/nn/modules/module.py", line 1786, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/workspace/project/src/losses/dc_loss.py", line 205, in forward
+    logistic, _ = torch.sort(logistic.flatten())
+torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 2.05 GiB. GPU 0 has a total capacity of 31.36 GiB of which 1.43 GiB is free. Including non-PyTorch memory, this process has 29.92 GiB memory in use. Of the allocated memory 29.25 GiB is allocated by PyTorch, and 61.59 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)
+2026-01-27 17:15:17,098 ignite.engine.engine.SupervisedTrainer ERROR: Engine run is terminating due to exception: CUDA out of memory. Tried to allocate 2.05 GiB. GPU 0 has a total capacity of 31.36 GiB of which 1.43 GiB is free. Including non-PyTorch memory, this process has 29.92 GiB memory in use. Of the allocated memory 29.25 GiB is allocated by PyTorch, and 61.59 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)
+2026-01-27 17:15:17,098 ignite.engine.engine.SupervisedTrainer ERROR: Exception: CUDA out of memory. Tried to allocate 2.05 GiB. GPU 0 has a total capacity of 31.36 GiB of which 1.43 GiB is free. Including non-PyTorch memory, this process has 29.92 GiB memory in use. Of the allocated memory 29.25 GiB is allocated by PyTorch, and 61.59 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.10/dist-packages/ignite/engine/engine.py", line 991, in _internal_run_as_gen
+    epoch_time_taken += yield from self._run_once_on_dataset_as_gen()
+  File "/usr/local/lib/python3.10/dist-packages/ignite/engine/engine.py", line 1150, in _run_once_on_dataset_as_gen
+    self._handle_exception(e)
+  File "/usr/local/lib/python3.10/dist-packages/ignite/engine/engine.py", line 677, in _handle_exception
+    self._fire_event(Events.EXCEPTION_RAISED, e)
+  File "/usr/local/lib/python3.10/dist-packages/ignite/engine/engine.py", line 454, in _fire_event
+    func(*first, *(event_args + others), **kwargs)
+  File "/usr/local/lib/python3.10/dist-packages/monai/handlers/stats_handler.py", line 201, in exception_raised
+    raise e
+  File "/usr/local/lib/python3.10/dist-packages/ignite/engine/engine.py", line 1132, in _run_once_on_dataset_as_gen
+    self.state.output = self._process_function(self, self.state.batch)
+  File "/usr/local/lib/python3.10/dist-packages/monai/engines/trainer.py", line 253, in _iteration
+    _compute_pred_loss()
+  File "/usr/local/lib/python3.10/dist-packages/monai/engines/trainer.py", line 245, in _compute_pred_loss
+    engine.state.output[Keys.LOSS] = engine.loss_function(engine.state.output[Keys.PRED], targets).mean()
+  File "/usr/local/lib/python3.10/dist-packages/torch/nn/modules/module.py", line 1775, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/usr/local/lib/python3.10/dist-packages/torch/nn/modules/module.py", line 1786, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/usr/local/lib/python3.10/dist-packages/monai/losses/ds_loss.py", line 78, in forward
+    loss += weights[l] * self.get_loss(input[l].float(), target)
+  File "/usr/local/lib/python3.10/dist-packages/monai/losses/ds_loss.py", line 71, in get_loss
+    return self.loss(input, target)  # type: ignore[no-any-return]
+  File "/usr/local/lib/python3.10/dist-packages/torch/nn/modules/module.py", line 1775, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/usr/local/lib/python3.10/dist-packages/torch/nn/modules/module.py", line 1786, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/workspace/project/src/losses/dc_loss.py", line 378, in forward
+    dc_loss_val = self.dc_loss(y_pred, y_true)
+  File "/usr/local/lib/python3.10/dist-packages/torch/nn/modules/module.py", line 1775, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/usr/local/lib/python3.10/dist-packages/torch/nn/modules/module.py", line 1786, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/workspace/project/src/losses/dc_loss.py", line 205, in forward
+    logistic, _ = torch.sort(logistic.flatten())
+torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 2.05 GiB. GPU 0 has a total capacity of 31.36 GiB of which 1.43 GiB is free. Including non-PyTorch memory, this process has 29.92 GiB memory in use. Of the allocated memory 29.25 GiB is allocated by PyTorch, and 61.59 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)
+2026-01-27 17:16:29,328 ignite.engine.engine.SupervisedTrainer ERROR: Current run is terminating due to exception: CUDA out of memory. Tried to allocate 4.09 GiB. GPU 0 has a total capacity of 31.36 GiB of which 1.62 GiB is free. Including non-PyTorch memory, this process has 29.72 GiB memory in use. Of the allocated memory 29.03 GiB is allocated by PyTorch, and 84.87 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)
+2026-01-27 17:16:29,328 ignite.engine.engine.SupervisedTrainer ERROR: Exception: CUDA out of memory. Tried to allocate 4.09 GiB. GPU 0 has a total capacity of 31.36 GiB of which 1.62 GiB is free. Including non-PyTorch memory, this process has 29.72 GiB memory in use. Of the allocated memory 29.03 GiB is allocated by PyTorch, and 84.87 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.10/dist-packages/ignite/engine/engine.py", line 1132, in _run_once_on_dataset_as_gen
+    self.state.output = self._process_function(self, self.state.batch)
+  File "/usr/local/lib/python3.10/dist-packages/monai/engines/trainer.py", line 253, in _iteration
+    _compute_pred_loss()
+  File "/usr/local/lib/python3.10/dist-packages/monai/engines/trainer.py", line 245, in _compute_pred_loss
+    engine.state.output[Keys.LOSS] = engine.loss_function(engine.state.output[Keys.PRED], targets).mean()
+  File "/usr/local/lib/python3.10/dist-packages/torch/nn/modules/module.py", line 1775, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/usr/local/lib/python3.10/dist-packages/torch/nn/modules/module.py", line 1786, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/usr/local/lib/python3.10/dist-packages/monai/losses/ds_loss.py", line 78, in forward
+    loss += weights[l] * self.get_loss(input[l].float(), target)
+  File "/usr/local/lib/python3.10/dist-packages/monai/losses/ds_loss.py", line 71, in get_loss
+    return self.loss(input, target)  # type: ignore[no-any-return]
+  File "/usr/local/lib/python3.10/dist-packages/torch/nn/modules/module.py", line 1775, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/usr/local/lib/python3.10/dist-packages/torch/nn/modules/module.py", line 1786, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/workspace/project/src/losses/dc_loss.py", line 378, in forward
+    dc_loss_val = self.dc_loss(y_pred, y_true)
+  File "/usr/local/lib/python3.10/dist-packages/torch/nn/modules/module.py", line 1775, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/usr/local/lib/python3.10/dist-packages/torch/nn/modules/module.py", line 1786, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/workspace/project/src/losses/dc_loss.py", line 205, in forward
+    logistic, _ = torch.sort(logistic.flatten())
+torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 4.09 GiB. GPU 0 has a total capacity of 31.36 GiB of which 1.62 GiB is free. Including non-PyTorch memory, this process has 29.72 GiB memory in use. Of the allocated memory 29.03 GiB is allocated by PyTorch, and 84.87 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)
+2026-01-27 17:16:33,685 ignite.engine.engine.SupervisedTrainer ERROR: Engine run is terminating due to exception: CUDA out of memory. Tried to allocate 4.09 GiB. GPU 0 has a total capacity of 31.36 GiB of which 1.62 GiB is free. Including non-PyTorch memory, this process has 29.72 GiB memory in use. Of the allocated memory 29.03 GiB is allocated by PyTorch, and 84.87 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)
+2026-01-27 17:16:33,685 ignite.engine.engine.SupervisedTrainer ERROR: Exception: CUDA out of memory. Tried to allocate 4.09 GiB. GPU 0 has a total capacity of 31.36 GiB of which 1.62 GiB is free. Including non-PyTorch memory, this process has 29.72 GiB memory in use. Of the allocated memory 29.03 GiB is allocated by PyTorch, and 84.87 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.10/dist-packages/ignite/engine/engine.py", line 991, in _internal_run_as_gen
+    epoch_time_taken += yield from self._run_once_on_dataset_as_gen()
+  File "/usr/local/lib/python3.10/dist-packages/ignite/engine/engine.py", line 1150, in _run_once_on_dataset_as_gen
+    self._handle_exception(e)
+  File "/usr/local/lib/python3.10/dist-packages/ignite/engine/engine.py", line 677, in _handle_exception
+    self._fire_event(Events.EXCEPTION_RAISED, e)
+  File "/usr/local/lib/python3.10/dist-packages/ignite/engine/engine.py", line 454, in _fire_event
+    func(*first, *(event_args + others), **kwargs)
+  File "/usr/local/lib/python3.10/dist-packages/monai/handlers/stats_handler.py", line 201, in exception_raised
+    raise e
+  File "/usr/local/lib/python3.10/dist-packages/ignite/engine/engine.py", line 1132, in _run_once_on_dataset_as_gen
+    self.state.output = self._process_function(self, self.state.batch)
+  File "/usr/local/lib/python3.10/dist-packages/monai/engines/trainer.py", line 253, in _iteration
+    _compute_pred_loss()
+  File "/usr/local/lib/python3.10/dist-packages/monai/engines/trainer.py", line 245, in _compute_pred_loss
+    engine.state.output[Keys.LOSS] = engine.loss_function(engine.state.output[Keys.PRED], targets).mean()
+  File "/usr/local/lib/python3.10/dist-packages/torch/nn/modules/module.py", line 1775, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/usr/local/lib/python3.10/dist-packages/torch/nn/modules/module.py", line 1786, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/usr/local/lib/python3.10/dist-packages/monai/losses/ds_loss.py", line 78, in forward
+    loss += weights[l] * self.get_loss(input[l].float(), target)
+  File "/usr/local/lib/python3.10/dist-packages/monai/losses/ds_loss.py", line 71, in get_loss
+    return self.loss(input, target)  # type: ignore[no-any-return]
+  File "/usr/local/lib/python3.10/dist-packages/torch/nn/modules/module.py", line 1775, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/usr/local/lib/python3.10/dist-packages/torch/nn/modules/module.py", line 1786, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/workspace/project/src/losses/dc_loss.py", line 378, in forward
+    dc_loss_val = self.dc_loss(y_pred, y_true)
+  File "/usr/local/lib/python3.10/dist-packages/torch/nn/modules/module.py", line 1775, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/usr/local/lib/python3.10/dist-packages/torch/nn/modules/module.py", line 1786, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/workspace/project/src/losses/dc_loss.py", line 205, in forward
+    logistic, _ = torch.sort(logistic.flatten())
+torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 4.09 GiB. GPU 0 has a total capacity of 31.36 GiB of which 1.62 GiB is free. Including non-PyTorch memory, this process has 29.72 GiB memory in use. Of the allocated memory 29.03 GiB is allocated by PyTorch, and 84.87 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)

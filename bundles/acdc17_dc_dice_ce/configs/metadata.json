@@ -1,0 +1,18 @@
+{
+    "version": "0.0.1",
+    "changelog": {
+        "0.0.1": "Initial version with DCLossandDiceCELoss"
+    },
+    "monai_version": "1.3.0",
+    "pytorch_version": "2.1.0",
+    "numpy_version": "1.26.0",
+    "optional_packages_version": {},
+    "task": "Multi-class cardiac segmentation with DC calibration loss",
+    "description": "ACDC17 segmentation using DCLossandDiceCELoss - combining Distance-based Calibration Loss, Dice Loss, and Cross-Entropy Loss for improved calibration and segmentation accuracy.",
+    "authors": "Your Name Here",
+    "copyright": "Copyright (c) Your Name Here",
+    "network_data_format": {
+        "inputs": {},
+        "outputs": {}
+    }
+}

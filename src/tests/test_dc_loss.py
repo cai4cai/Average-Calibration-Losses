@@ -1,6 +1,11 @@
 import pytest
 import torch
-from src.losses import DCLoss
+from src.losses import (
+    DCLoss,
+    DCLossandCELoss,
+    DCLossandDiceLoss,
+    DCLossandDiceCELoss,
+)
 
 
 DEVICES = [torch.device("cpu")]
@@ -226,3 +231,207 @@ class TestDCLoss:
         assert torch.allclose(
             batch_loss, stacked_losses, rtol=1e-5
         ), "Batch loss should match individual losses"
+
+
+class TestCompositeDCLosses:
+    """Test suite for composite DC losses"""
+
+    def test_dc_ce_loss_basic(self, device):
+        """Test DCLossandCELoss basic forward pass"""
+        loss_fn = DCLossandCELoss(
+            dc_weight=0.5,
+            ce_weight=0.5,
+            to_onehot_y=True,
+            dc_params={"n_points": 50, "softmax": True},
+            ce_params={"reduction": "mean"},
+        ).to(device)
+
+        y_pred = torch.randn(2, 3, 16, 16, device=device, requires_grad=True)
+        y_true = torch.randint(0, 3, (2, 1, 16, 16), device=device)
+
+        loss = loss_fn(y_pred, y_true)
+
+        assert loss.item() >= 0, "Loss should be non-negative"
+        assert torch.isfinite(loss), "Loss should be finite"
+
+        # Test backward pass
+        loss.backward()
+        assert y_pred.grad is not None, "Gradients should be computed"
+
+    def test_dc_dice_loss_basic(self, device):
+        """Test DCLossandDiceLoss basic forward pass"""
+        loss_fn = DCLossandDiceLoss(
+            dc_weight=0.5,
+            dice_weight=0.5,
+            to_onehot_y=True,
+            dc_params={"n_points": 50, "softmax": True},
+            dice_params={"softmax": True, "reduction": "mean"},
+        ).to(device)
+
+        y_pred = torch.randn(2, 3, 16, 16, device=device, requires_grad=True)
+        y_true = torch.randint(0, 3, (2, 1, 16, 16), device=device)
+
+        loss = loss_fn(y_pred, y_true)
+
+        assert loss.item() >= 0, "Loss should be non-negative"
+        assert torch.isfinite(loss), "Loss should be finite"
+
+        # Test backward pass
+        loss.backward()
+        assert y_pred.grad is not None, "Gradients should be computed"
+
+    def test_dc_dice_ce_loss_basic(self, device):
+        """Test DCLossandDiceCELoss basic forward pass"""
+        loss_fn = DCLossandDiceCELoss(
+            dc_weight=0.33,
+            dice_weight=0.33,
+            ce_weight=0.34,
+            to_onehot_y=True,
+            dc_params={"n_points": 50, "softmax": True},
+            dice_params={"softmax": True, "reduction": "mean"},
+            ce_params={"reduction": "mean"},
+        ).to(device)
+
+        y_pred = torch.randn(2, 3, 16, 16, device=device, requires_grad=True)
+        y_true = torch.randint(0, 3, (2, 1, 16, 16), device=device)
+
+        loss = loss_fn(y_pred, y_true)
+
+        assert loss.item() >= 0, "Loss should be non-negative"
+        assert torch.isfinite(loss), "Loss should be finite"
+
+        # Test backward pass
+        loss.backward()
+        assert y_pred.grad is not None, "Gradients should be computed"
+
+    @pytest.mark.parametrize(
+        "loss_class,params",
+        [
+            (DCLossandCELoss, {"dc_weight": 0.7, "ce_weight": 0.3}),
+            (DCLossandDiceLoss, {"dc_weight": 0.6, "dice_weight": 0.4}),
+            (
+                DCLossandDiceCELoss,
+                {"dc_weight": 0.2, "dice_weight": 0.5, "ce_weight": 0.3},
+            ),
+        ],
+    )
+    def test_composite_loss_weights(self, device, loss_class, params):
+        """Test that composite losses work with different weight configurations"""
+        loss_fn = loss_class(to_onehot_y=True, **params).to(device)
+
+        y_pred = torch.randn(2, 3, 16, 16, device=device)
+        y_true = torch.randint(0, 3, (2, 1, 16, 16), device=device)
+
+        loss = loss_fn(y_pred, y_true)
+
+        assert torch.isfinite(loss), "Loss should be finite"
+
+    def test_dc_ce_loss_without_onehot(self, device):
+        """Test DCLossandCELoss with pre-one-hot targets"""
+        loss_fn = DCLossandCELoss(
+            dc_weight=0.5,
+            ce_weight=0.5,
+            to_onehot_y=False,
+            dc_params={"n_points": 50},
+            ce_params={"reduction": "mean"},
+        ).to(device)
+
+        y_pred = torch.rand(2, 3, 16, 16, device=device)
+        y_true = torch.randint(0, 2, (2, 3, 16, 16), device=device).float()
+
+        loss = loss_fn(y_pred, y_true)
+
+        assert torch.isfinite(loss), "Loss should be finite"
+
+    def test_dc_dice_loss_without_onehot(self, device):
+        """Test DCLossandDiceLoss with pre-one-hot targets"""
+        loss_fn = DCLossandDiceLoss(
+            dc_weight=0.5,
+            dice_weight=0.5,
+            to_onehot_y=False,
+            dc_params={"n_points": 50},
+            dice_params={"reduction": "mean"},
+        ).to(device)
+
+        y_pred = torch.rand(2, 3, 16, 16, device=device)
+        y_true = torch.randint(0, 2, (2, 3, 16, 16), device=device).float()
+
+        loss = loss_fn(y_pred, y_true)
+
+        assert torch.isfinite(loss), "Loss should be finite"
+
+    def test_composite_loss_default_params(self, device):
+        """Test composite losses with default parameters"""
+        # DCLossandCELoss
+        loss_fn1 = DCLossandCELoss(to_onehot_y=True).to(device)
+        y_pred = torch.randn(2, 3, 16, 16, device=device)
+        y_true = torch.randint(0, 3, (2, 1, 16, 16), device=device)
+        loss1 = loss_fn1(y_pred, y_true)
+        assert torch.isfinite(loss1), "DCLossandCELoss should work with defaults"
+
+        # DCLossandDiceLoss
+        loss_fn2 = DCLossandDiceLoss(to_onehot_y=True).to(device)
+        loss2 = loss_fn2(y_pred, y_true)
+        assert torch.isfinite(loss2), "DCLossandDiceLoss should work with defaults"
+
+        # DCLossandDiceCELoss
+        loss_fn3 = DCLossandDiceCELoss(to_onehot_y=True).to(device)
+        loss3 = loss_fn3(y_pred, y_true)
+        assert torch.isfinite(loss3), "DCLossandDiceCELoss should work with defaults"
+
+    def test_composite_loss_custom_dc_params(self, device):
+        """Test composite losses with custom DC parameters"""
+        dc_params = {
+            "n_points": 100,
+            "include_background": False,
+            "softmax": True,
+        }
+
+        loss_fn = DCLossandDiceCELoss(
+            to_onehot_y=True,
+            dc_params=dc_params,
+            dice_params={"softmax": True, "include_background": False},
+            ce_params={"reduction": "mean"},
+        ).to(device)
+
+        y_pred = torch.randn(2, 3, 16, 16, device=device)
+        y_true = torch.randint(0, 3, (2, 1, 16, 16), device=device)
+
+        loss = loss_fn(y_pred, y_true)
+
+        assert torch.isfinite(loss), "Loss should work with custom DC params"
+
+    def test_composite_loss_3d_input(self, device):
+        """Test composite losses with 3D volumetric data"""
+        loss_fn = DCLossandDiceCELoss(
+            to_onehot_y=True,
+            dc_params={"n_points": 50, "softmax": True},
+            dice_params={"softmax": True},
+            ce_params={"reduction": "mean"},
+        ).to(device)
+
+        # 3D input: [B, C, D, H, W]
+        y_pred = torch.randn(1, 2, 8, 8, 8, device=device)
+        y_true = torch.randint(0, 2, (1, 1, 8, 8, 8), device=device)
+
+        loss = loss_fn(y_pred, y_true)
+
+        assert torch.isfinite(loss), "Loss should work with 3D input"
+
+    @pytest.mark.parametrize(
+        "loss_class",
+        [DCLossandCELoss, DCLossandDiceLoss, DCLossandDiceCELoss],
+    )
+    def test_composite_loss_gradient_flow(self, device, loss_class):
+        """Test that gradients flow through all components of composite losses"""
+        loss_fn = loss_class(to_onehot_y=True).to(device)
+
+        y_pred = torch.randn(2, 3, 16, 16, device=device, requires_grad=True)
+        y_true = torch.randint(0, 3, (2, 1, 16, 16), device=device)
+
+        loss = loss_fn(y_pred, y_true)
+        loss.backward()
+
+        assert y_pred.grad is not None, "Gradients should flow through composite loss"
+        assert not torch.isnan(y_pred.grad).any(), "Gradients should not be NaN"
+        assert not torch.isinf(y_pred.grad).any(), "Gradients should not be inf"

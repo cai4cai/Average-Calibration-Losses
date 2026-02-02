@@ -9,10 +9,14 @@ from torch.nn.modules.loss import _Loss
 
 from monai.networks import one_hot
 from monai.utils import LossReduction
+from monai.losses import DiceLoss
 
 
 __all__ = [
     "DCLoss",
+    "DCLossandCELoss",
+    "DCLossandDiceLoss",
+    "DCLossandDiceCELoss",
 ]
 
 
@@ -101,9 +105,18 @@ class DCLoss(_Loss):
 
         Returns:
             Tensor of stratified logistic samples
+
+        # NOTE: Previous issue:
+        The issue is that _stratified_logistic generates values approaching
+        infinity at the tails when u gets very close to 0 or 1.
+        For large tensors (many voxels × n_points),
+        the last values of u approach 1, causing log(u) - log(1-u) to explode.
         """
         n = int(torch.tensor(shape).prod().item())
         u = (torch.arange(n, device=device, dtype=dtype) + 0.5) / n
+        # Clamp to avoid infinity at the tails of the logistic distribution
+        eps = torch.finfo(dtype).eps
+        u = u.clamp(eps, 1 - eps)
         return (torch.log(u) - torch.log1p(-u)).view(*shape)
 
     def forward(self, input: torch.Tensor, target: torch.Tensor) -> torch.Tensor:
@@ -208,3 +221,165 @@ class DCLoss(_Loss):
             raise ValueError(
                 f'Unsupported reduction: {self.reduction}, available options are ["mean", "sum", "none"].'
             )
+
+
+class DCLossandCELoss(_Loss):
+    """
+    A class that combines DC Loss and CrossEntropyLoss with specified weights.
+    """
+
+    def __init__(
+        self,
+        dc_weight=0.5,
+        ce_weight=0.5,
+        to_onehot_y=False,
+        dc_params=None,
+        ce_params=None,
+    ):
+        """
+        Initializes the DCLossandCELoss class.
+
+        Args:
+            dc_weight (float): Weight for the DCLoss component.
+            ce_weight (float): Weight for the CrossEntropyLoss component.
+            to_onehot_y: whether to convert the ``target`` into the one-hot format,
+                using the number of classes inferred from `pred` (``pred.shape[1]``). Defaults to False.
+            dc_params (dict, optional): Parameters for the DCLoss.
+            ce_params (dict, optional): Parameters for the CrossEntropyLoss.
+        """
+        super().__init__()
+        self.dc_weight = dc_weight
+        self.ce_weight = ce_weight
+        self.to_onehot_y = to_onehot_y
+        self.dc_loss = DCLoss(**(dc_params if dc_params is not None else {}))
+        self.ce_loss = nn.CrossEntropyLoss(
+            **(ce_params if ce_params is not None else {})
+        )
+
+    def forward(self, y_pred, y_true):
+        """
+        Forward pass for calculating the weighted sum of DC and CrossEntropy losses.
+
+        Args:
+            y_pred: Predicted logits or probabilities.
+            y_true: Ground truth labels.
+
+        Returns:
+            The weighted sum of DC and CrossEntropy losses.
+        """
+        if self.to_onehot_y:
+            y_true = one_hot(y_true, num_classes=y_pred.shape[1])
+        dc_loss_val = self.dc_loss(y_pred, y_true)
+        ce_loss_val = self.ce_loss(y_pred, y_true)
+        return self.dc_weight * dc_loss_val + self.ce_weight * ce_loss_val
+
+
+class DCLossandDiceLoss(_Loss):
+    """
+    A class that combines DC Loss and DiceLoss with specified weights.
+    """
+
+    def __init__(
+        self,
+        dc_weight=0.5,
+        dice_weight=0.5,
+        to_onehot_y=False,
+        dc_params=None,
+        dice_params=None,
+    ):
+        """
+        Initializes the DCLossandDiceLoss class.
+
+        Args:
+            dc_weight (float): Weight for the DCLoss component.
+            dice_weight (float): Weight for the DiceLoss component.
+            to_onehot_y: whether to convert the ``target`` into the one-hot format,
+                using the number of classes inferred from `pred` (``pred.shape[1]``). Defaults to False.
+            dc_params (dict, optional): Parameters for the DCLoss.
+            dice_params (dict, optional): Parameters for the DiceLoss.
+        """
+        super().__init__()
+        self.dc_weight = dc_weight
+        self.dice_weight = dice_weight
+        self.to_onehot_y = to_onehot_y
+        self.dc_loss = DCLoss(**(dc_params if dc_params is not None else {}))
+        self.dice_loss = DiceLoss(**(dice_params if dice_params is not None else {}))
+
+    def forward(self, y_pred, y_true):
+        """
+        Forward pass for calculating the weighted sum of DC and Dice losses.
+
+        Args:
+            y_pred: Predicted logits or probabilities.
+            y_true: Ground truth labels.
+
+        Returns:
+            The weighted sum of DC and Dice losses.
+        """
+        if self.to_onehot_y:
+            y_true = one_hot(y_true, num_classes=y_pred.shape[1])
+        dc_loss_val = self.dc_loss(y_pred, y_true)
+        dice_loss_val = self.dice_loss(y_pred, y_true)
+        return self.dc_weight * dc_loss_val + self.dice_weight * dice_loss_val
+
+
+class DCLossandDiceCELoss(_Loss):
+    """
+    A class that combines DC Loss, Dice Loss, and CrossEntropyLoss with specified weights.
+    """
+
+    def __init__(
+        self,
+        dc_weight=0.33,
+        ce_weight=0.33,
+        dice_weight=0.33,
+        to_onehot_y=False,
+        dc_params=None,
+        dice_params=None,
+        ce_params=None,
+    ):
+        """
+        Initializes the DCLossandDiceCELoss class.
+
+        Args:
+            dc_weight (float): Weight for the DCLoss component.
+            dice_weight (float): Weight for the DiceLoss component.
+            ce_weight (float): Weight for the CrossEntropyLoss component.
+            to_onehot_y (bool): Whether to convert the `target` into the one-hot format.
+            dc_params (dict, optional): Parameters for the DCLoss.
+            dice_params (dict, optional): Parameters for the DiceLoss.
+            ce_params (dict, optional): Parameters for the CrossEntropyLoss.
+        """
+        super().__init__()
+        self.dc_weight = dc_weight
+        self.ce_weight = ce_weight
+        self.dice_weight = dice_weight
+        self.to_onehot_y = to_onehot_y
+
+        self.dc_loss = DCLoss(**(dc_params if dc_params is not None else {}))
+        self.dice_loss = DiceLoss(**(dice_params if dice_params is not None else {}))
+        self.ce_loss = nn.CrossEntropyLoss(
+            **(ce_params if ce_params is not None else {})
+        )
+
+    def forward(self, y_pred, y_true):
+        """
+        Forward pass for calculating the weighted sum of DC, Dice, and CrossEntropy losses.
+
+        Args:
+            y_pred: Predicted logits or probabilities.
+            y_true: Ground truth labels.
+
+        Returns:
+            The weighted sum of DC, Dice, and CrossEntropy losses.
+        """
+        if self.to_onehot_y:
+            y_true = one_hot(y_true, num_classes=y_pred.shape[1])
+        dc_loss_val = self.dc_loss(y_pred, y_true)
+        dice_loss_val = self.dice_loss(y_pred, y_true)
+        ce_loss_val = self.ce_loss(y_pred, y_true)
+        return (
+            self.dc_weight * dc_loss_val
+            + self.dice_weight * dice_loss_val
+            + self.ce_weight * ce_loss_val
+        )

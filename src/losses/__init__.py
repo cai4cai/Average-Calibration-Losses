@@ -4,6 +4,9 @@ from .crossentropy import (
 
 from .dc_loss import (
     DCLoss,
+    DCLossandCELoss,
+    DCLossandDiceLoss,
+    DCLossandDiceCELoss,
 )
 
 from .hardl1ace import (
@@ -25,6 +28,9 @@ from .softl1ace import (
 __all__ = [
     "CrossEntropyLoss",
     "DCLoss",
+    "DCLossandCELoss",
+    "DCLossandDiceLoss",
+    "DCLossandDiceCELoss",
     "hard_binned_calibration",
     "HardL1ACELoss",
     "HardL1ACEandCELoss",
