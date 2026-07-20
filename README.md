@@ -4,7 +4,11 @@
 
 </div>
 
+[IEEE TMI Xplore paper](https://ieeexplore.ieee.org/document/11430670) 
+
 [Pre-print arXiv paper](https://arxiv.org/abs/2506.03942v3)
+
+
 
 ---
 
